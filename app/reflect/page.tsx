@@ -1,107 +1,137 @@
-// app/reflect/page.tsx
+"use client";
 
-type WeeklyStats = {
-  studySessions: number;
-  totalMinutes: number;
-  consistency: number; // 0 → 100
-  suggestedActionsCompleted: number;
-  suggestedActionsTotal: number;
-};
+import { useSession } from "@/contexts/SessionContext";
 
-type PatternInsight = {
-  id: string;
-  text: string;
-};
+type AlignmentStatus = "good" | "warning" | "off-track";
 
-type AlignmentReview = {
-  area: string;
-  status: "good" | "warning" | "off-track";
-  note: string;
-};
-
-const alignmentColor: Record<AlignmentReview["status"], string> = {
-  good: "text-green-400",
-  warning: "text-yellow-400",
-  "off-track": "text-red-400",
-};
+function minutesBetween(start: number, end: number) {
+  return Math.floor((end - start) / 60000);
+}
 
 export default function ReflectPage() {
-  const stats: WeeklyStats = {
-    studySessions: 6,
-    totalMinutes: 340,
-    consistency: 60,
-    suggestedActionsCompleted: 4,
-    suggestedActionsTotal: 6,
-  };
+  const { history } = useSession();
 
-  const patterns: PatternInsight[] = [
-    {
-      id: "p1",
-      text: "You focused better in the morning than at night.",
-    },
-    {
-      id: "p2",
-      text: "Medium-energy tasks had the highest completion rate.",
-    },
-    {
-      id: "p3",
-      text: "Sistemas Digitais required more effort than expected.",
-    },
-  ];
+  // ---------- métricas reais ----------
+  const totalSessions = history.length;
 
-  const alignment: AlignmentReview[] = [
+  const totalMinutes = history.reduce((sum, s) => {
+    return sum + minutesBetween(s.startedAt, s.endedAt);
+  }, 0);
+
+  // dias únicos com sessão (consistência simples)
+  const daysWithSessions = new Set(
+    history.map(s =>
+      new Date(s.startedAt).toDateString()
+    )
+  ).size;
+
+  const consistency = Math.min(
+    Math.round((daysWithSessions / 7) * 100),
+    100
+  );
+
+  // ---------- padrões simples ----------
+  const morningSessions = history.filter(s => {
+    const hour = new Date(s.startedAt).getHours();
+    return hour >= 6 && hour < 12;
+  }).length;
+
+  const nightSessions = history.filter(s => {
+    const hour = new Date(s.startedAt).getHours();
+    return hour >= 18;
+  }).length;
+
+  const patterns: string[] = [];
+
+  if (morningSessions > nightSessions) {
+    patterns.push(
+      "You focused better during the morning."
+    );
+  }
+
+  if (nightSessions > morningSessions) {
+    patterns.push(
+      "Night sessions were more frequent than expected."
+    );
+  }
+
+  if (totalMinutes > 300) {
+    patterns.push(
+      "Your total focus time increased this week."
+    );
+  }
+
+  if (patterns.length === 0) {
+    patterns.push(
+      "Not enough data yet to identify patterns."
+    );
+  }
+
+  // ---------- alinhamento simples ----------
+  const alignment: {
+    area: string;
+    status: AlignmentStatus;
+    note: string;
+  }[] = [
     {
-      area: "Academic path",
-      status: "good",
-      note: "Consistent study sessions across core subjects.",
-    },
-    {
-      area: "Career path",
-      status: "warning",
-      note: "Low progress on portfolio-related work.",
+      area: "Focus discipline",
+      status:
+        consistency >= 60
+          ? "good"
+          : consistency >= 30
+          ? "warning"
+          : "off-track",
+      note:
+        consistency >= 60
+          ? "You maintained a consistent study rhythm."
+          : "Try to distribute sessions across more days.",
     },
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pb-16">
+    <main className="min-h-screen bg-black text-white p-6">
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <header>
           <h1 className="text-2xl font-medium">Reflect</h1>
           <p className="text-sm text-neutral-400">
-            Week of Jan 13 → Jan 19
+            Weekly review
           </p>
         </header>
 
-        {/* Week Summary */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
-          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
+        {/* Week summary */}
+        <section className="rounded-2xl border border-neutral-800 p-6">
+          <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
             This week
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-neutral-500">Study sessions</p>
-              <p className="text-lg">{stats.studySessions}</p>
+              <p className="text-neutral-500">Sessions</p>
+              <p className="text-lg">{totalSessions}</p>
             </div>
 
             <div>
               <p className="text-neutral-500">Focus time</p>
               <p className="text-lg">
-                {(stats.totalMinutes / 60).toFixed(1)}h
+                {(totalMinutes / 60).toFixed(1)}h
               </p>
             </div>
 
             <div>
               <p className="text-neutral-500">Consistency</p>
-              <p className="text-lg">{stats.consistency}%</p>
+              <p className="text-lg">{consistency}%</p>
             </div>
 
             <div>
-              <p className="text-neutral-500">Suggested actions</p>
+              <p className="text-neutral-500">Avg / session</p>
               <p className="text-lg">
-                {stats.suggestedActionsCompleted} /{" "}
-                {stats.suggestedActionsTotal}
+                {totalSessions
+                  ? Math.round(
+                      totalMinutes / totalSessions
+                    )
+                  : 0}{" "}
+                min
               </p>
             </div>
           </div>
@@ -114,55 +144,59 @@ export default function ReflectPage() {
           </h2>
 
           <ul className="space-y-2 text-sm text-neutral-400">
-            {patterns.map(p => (
+            {patterns.map((p, i) => (
               <li
-                key={p.id}
+                key={i}
                 className="rounded-xl border border-neutral-800 p-4"
               >
-                {p.text}
+                {p}
               </li>
             ))}
           </ul>
         </section>
 
-        {/* Alignment Review */}
+        {/* Alignment */}
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Alignment review
           </h2>
 
-          <div className="space-y-4">
-            {alignment.map(item => (
-              <div
-                key={item.area}
-                className="rounded-2xl border border-neutral-800 p-5"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="font-medium">{item.area}</p>
-                  <span
-                    className={`text-xs uppercase tracking-widest ${alignmentColor[item.status]}`}
-                  >
-                    {item.status.replace("-", " ")}
-                  </span>
-                </div>
-
-                <p className="mt-2 text-sm text-neutral-400">
-                  {item.note}
-                </p>
+          {alignment.map(item => (
+            <div
+              key={item.area}
+              className="rounded-2xl border border-neutral-800 p-5"
+            >
+              <div className="flex items-center justify-between">
+                <p className="font-medium">{item.area}</p>
+                <span
+                  className={`text-xs uppercase tracking-widest ${
+                    item.status === "good"
+                      ? "text-green-400"
+                      : item.status === "warning"
+                      ? "text-yellow-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {item.status.replace("-", " ")}
+                </span>
               </div>
-            ))}
-          </div>
+
+              <p className="mt-2 text-sm text-neutral-400">
+                {item.note}
+              </p>
+            </div>
+          ))}
         </section>
 
-        {/* System Adjustments */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-3">
-          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            System adjustments
+        {/* System adjustment (informativo) */}
+        <section className="rounded-2xl border border-neutral-800 p-6">
+          <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
+            System adjustment
           </h2>
 
           <p className="text-sm text-neutral-400">
-            Based on this week, KODO will slightly prioritize
-            medium-energy tasks and earlier study sessions.
+            KODO will gradually favor time slots and action
+            types where you showed higher consistency.
           </p>
         </section>
       </div>

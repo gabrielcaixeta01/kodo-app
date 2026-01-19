@@ -2,39 +2,43 @@
 
 import { useSession } from "@/contexts/SessionContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function SessionPage() {
   const { session, endSession } = useSession();
   const router = useRouter();
-  const [elapsedMinutes, setElapsedMinutes] = useState(0);
-  const isEndingRef = useRef(false);
 
-  // redireciona se não houver sessão
+  // ✅ mounted sem effect
+  const [mounted] = useState(
+    () => typeof window !== "undefined"
+  );
+
+  const [elapsedMinutes, setElapsedMinutes] = useState(0);
+
+  // 🔹 redireciona se não houver sessão
   useEffect(() => {
-    if (!session && !isEndingRef.current) {
+    if (mounted && !session) {
       router.replace("/");
     }
-  }, [session, router]);
+  }, [mounted, session, router]);
 
-  // controla o tempo decorrido
+  // 🔹 controla o tempo
   useEffect(() => {
-    if (!session) return;
+    if (!mounted || !session) return;
 
     function updateTime() {
-      const diff =
-        Date.now() - (session?.startedAt ?? 0);
-      setElapsedMinutes(
-        Math.floor(diff / 60000)
-      );
+      if (!session) return;
+      const diff = Date.now() - session.startedAt;
+      setElapsedMinutes(Math.floor(diff / 60000));
     }
 
-    updateTime(); // primeira atualização
+    updateTime();
     const interval = setInterval(updateTime, 60000);
-
     return () => clearInterval(interval);
-  }, [session]);
+  }, [mounted, session]);
 
+  // 🔒 guarda de render
+  if (!mounted) return null;
   if (!session) return null;
 
   return (
@@ -59,9 +63,8 @@ export default function SessionPage() {
 
         <button
           onClick={() => {
-            isEndingRef.current = true;
             endSession();
-            router.replace("/reflect");
+            router.push("/reflect");
           }}
           className="w-full rounded-xl border border-red-500/40 py-2 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition"
         >
