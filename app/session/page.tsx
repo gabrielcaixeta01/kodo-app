@@ -7,17 +7,23 @@ import { useEffect, useState } from "react";
 export default function SessionPage() {
   const { session, endSession } = useSession();
   const router = useRouter();
-
-  // ✅ mounted sem effect
-  const [mounted] = useState(
-    () => typeof window !== "undefined"
-  );
-
+  const [mounted, setMounted] = useState(false);
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
+
+  // Redireciona se não houver sessão (após montagem)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 🔹 redireciona se não houver sessão
   useEffect(() => {
-    if (mounted && !session) {
+    if (!mounted) return;
+
+    // Se não tem sessão após montagem, volta ao dashboard
+    if (!session) {
       router.replace("/");
     }
   }, [mounted, session, router]);
@@ -64,7 +70,7 @@ export default function SessionPage() {
         <button
           onClick={() => {
             endSession();
-            router.push("/reflect");
+            router.replace("/reflect");
           }}
           className="w-full rounded-xl border border-red-500/40 py-2 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition"
         >

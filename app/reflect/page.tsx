@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "@/contexts/SessionContext";
+import { useEffect, useState } from "react";
 
 type AlignmentStatus = "good" | "warning" | "off-track";
 
@@ -10,20 +11,32 @@ function minutesBetween(start: number, end: number) {
 
 export default function ReflectPage() {
   const { history } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   // ---------- métricas reais ----------
-  const totalSessions = history.length;
+  const totalSessions = mounted ? history.length : 0;
 
-  const totalMinutes = history.reduce((sum, s) => {
-    return sum + minutesBetween(s.startedAt, s.endedAt);
-  }, 0);
+  const totalMinutes = mounted
+    ? history.reduce((sum, s) => {
+        return sum + minutesBetween(s.startedAt, s.endedAt);
+      }, 0)
+    : 0;
 
   // dias únicos com sessão (consistência simples)
-  const daysWithSessions = new Set(
-    history.map(s =>
-      new Date(s.startedAt).toDateString()
-    )
-  ).size;
+  const daysWithSessions = mounted
+    ? new Set(
+        history.map(s =>
+          new Date(s.startedAt).toDateString()
+        )
+      ).size
+    : 0;
 
   const consistency = Math.min(
     Math.round((daysWithSessions / 7) * 100),
@@ -31,40 +44,46 @@ export default function ReflectPage() {
   );
 
   // ---------- padrões simples ----------
-  const morningSessions = history.filter(s => {
-    const hour = new Date(s.startedAt).getHours();
-    return hour >= 6 && hour < 12;
-  }).length;
+  const morningSessions = mounted
+    ? history.filter(s => {
+        const hour = new Date(s.startedAt).getHours();
+        return hour >= 6 && hour < 12;
+      }).length
+    : 0;
 
-  const nightSessions = history.filter(s => {
-    const hour = new Date(s.startedAt).getHours();
-    return hour >= 18;
-  }).length;
+  const nightSessions = mounted
+    ? history.filter(s => {
+        const hour = new Date(s.startedAt).getHours();
+        return hour >= 18;
+      }).length
+    : 0;
 
   const patterns: string[] = [];
 
-  if (morningSessions > nightSessions) {
-    patterns.push(
-      "You focused better during the morning."
-    );
-  }
+  if (mounted) {
+    if (morningSessions > nightSessions) {
+      patterns.push(
+        "You focused better during the morning."
+      );
+    }
 
-  if (nightSessions > morningSessions) {
-    patterns.push(
-      "Night sessions were more frequent than expected."
-    );
-  }
+    if (nightSessions > morningSessions) {
+      patterns.push(
+        "Night sessions were more frequent than expected."
+      );
+    }
 
-  if (totalMinutes > 300) {
-    patterns.push(
-      "Your total focus time increased this week."
-    );
-  }
+    if (totalMinutes > 300) {
+      patterns.push(
+        "Your total focus time increased this week."
+      );
+    }
 
-  if (patterns.length === 0) {
-    patterns.push(
-      "Not enough data yet to identify patterns."
-    );
+    if (patterns.length === 0) {
+      patterns.push(
+        "Not enough data yet to identify patterns."
+      );
+    }
   }
 
   // ---------- alinhamento simples ----------

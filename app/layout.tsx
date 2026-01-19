@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "@/contexts/SessionContext";
 import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
+import { ActivityProvider } from "@/contexts/ActivityContext";
 
 
 export const metadata: Metadata = {
@@ -18,10 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-white">
-        <SessionProvider>
-          {children}
-          <ConditionalFooterNav />
-        </SessionProvider>
+        <ActivityProvider>
+          <SessionProvider>
+            {children}
+            <ConditionalFooterNav />
+          </SessionProvider>
+        </ActivityProvider>
       </body>
     </html>
   );

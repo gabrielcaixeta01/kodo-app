@@ -1,158 +1,180 @@
-// app/studies/page.tsx
+"use client";
 
-type RiskLevel = "low" | "medium" | "high";
-
-type Subject = {
-  id: string;
-  name: string;
-  professor: string;
-  credits: number;
-  risk: RiskLevel;
-  nextDeadline?: {
-    title: string;
-    days: number;
-  };
-  progress: number; // 0 → 100
-};
-
-const riskOrder: Record<RiskLevel, number> = {
-  high: 0,
-  medium: 1,
-  low: 2,
-};
+import { useState, useEffect } from "react";
+import { useActivities } from "@/contexts/ActivityContext";
+import {
+  Difficulty,
+  Priority,
+} from "@/types/activity";
 
 export default function StudiesPage() {
-  const subjects: Subject[] = [
-    {
-      id: "sd",
-      name: "Sistemas Digitais",
-      professor: "João Silva",
-      credits: 4,
-      risk: "high",
-      nextDeadline: {
-        title: "Prova 1",
-        days: 3,
-      },
-      progress: 45,
-    },
-    {
-      id: "calc3",
-      name: "Cálculo III",
-      professor: "Maria Oliveira",
-      credits: 4,
-      risk: "medium",
-      nextDeadline: {
-        title: "Lista 4",
-        days: 7,
-      },
-      progress: 65,
-    },
-    {
-      id: "fis",
-      name: "Física II",
-      professor: "Carlos Lima",
-      credits: 4,
-      risk: "low",
-      progress: 80,
-    },
-  ];
+  const { activities, addActivity } =
+    useActivities();
 
-  const sortedSubjects = [...subjects].sort(
-    (a, b) => riskOrder[a.risk] - riskOrder[b.risk]
-  );
+  const [mounted, setMounted] = useState(false);
+  const [title, setTitle] = useState("");
+  const [difficulty, setDifficulty] =
+    useState<Difficulty>("medium");
+  const [priority, setPriority] =
+    useState<Priority>("medium");
+  const [dueDate, setDueDate] = useState("");
 
-  const atRiskCount = subjects.filter(s => s.risk === "high").length;
-  const upcomingExams = subjects.filter(s => s.nextDeadline).length;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    addActivity({
+      title: title.trim(),
+      difficulty,
+      priority,
+      dueDate: dueDate
+        ? new Date(dueDate).getTime()
+        : undefined,
+    });
+
+    setTitle("");
+    setDifficulty("medium");
+    setPriority("medium");
+    setDueDate("");
+  }
 
   return (
     <main className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-3xl mx-auto space-y-8">
-        {/* Header */}
+      <div className="max-w-3xl mx-auto space-y-10">
         <header>
-          <h1 className="text-2xl font-medium">Studies</h1>
+          <h1 className="text-2xl font-medium">
+            Studies
+          </h1>
           <p className="text-sm text-neutral-400">
-            Current semester overview
+            Activities that require action
           </p>
         </header>
 
-        {/* Overview */}
-        <section className="rounded-2xl border border-neutral-800 p-5">
+        {/* Add activity */}
+        <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Semester Status
+            Add activity
           </h2>
 
-          <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="text-neutral-500">Disciplines</p>
-              <p className="text-lg">{subjects.length}</p>
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
+            <input
+              value={title}
+              onChange={e =>
+                setTitle(e.target.value)
+              }
+              placeholder="Activity title"
+              className="w-full rounded-xl bg-black border border-neutral-700 px-4 py-2 text-sm focus:outline-none"
+            />
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <select
+                value={difficulty}
+                onChange={e =>
+                  setDifficulty(
+                    e.target.value as Difficulty
+                  )
+                }
+                className="rounded-xl bg-black border border-neutral-700 px-3 py-2 text-sm"
+              >
+                <option value="low">
+                  Low difficulty
+                </option>
+                <option value="medium">
+                  Medium difficulty
+                </option>
+                <option value="high">
+                  High difficulty
+                </option>
+              </select>
+
+              <select
+                value={priority}
+                onChange={e =>
+                  setPriority(
+                    e.target.value as Priority
+                  )
+                }
+                className="rounded-xl bg-black border border-neutral-700 px-3 py-2 text-sm"
+              >
+                <option value="low">
+                  Low priority
+                </option>
+                <option value="medium">
+                  Medium priority
+                </option>
+                <option value="high">
+                  High priority
+                </option>
+              </select>
+
+              <input
+                type="date"
+                value={dueDate}
+                onChange={e =>
+                  setDueDate(e.target.value)
+                }
+                className="rounded-xl bg-black border border-neutral-700 px-3 py-2 text-sm"
+              />
             </div>
 
-            <div>
-              <p className="text-neutral-500">At risk</p>
-              <p className="text-lg">{atRiskCount}</p>
-            </div>
-
-            <div>
-              <p className="text-neutral-500">Upcoming deadlines</p>
-              <p className="text-lg">{upcomingExams}</p>
-            </div>
-          </div>
+            <button
+              type="submit"
+              className="rounded-xl border border-white/20 px-4 py-2 text-sm hover:border-white/40 transition"
+            >
+              Add activity
+            </button>
+          </form>
         </section>
 
-        {/* Discipline List */}
-        <section className="space-y-4">
-          {sortedSubjects.map(subject => (
+        {/* Activities list */}
+        <section className="space-y-3">
+          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
+            Activities
+          </h2>
+
+          {!mounted && (
+            <p className="text-sm text-neutral-500">
+              Loading activities...
+            </p>
+          )}
+
+          {mounted && activities.length === 0 && (
+            <p className="text-sm text-neutral-500">
+              No activities yet.
+            </p>
+          )}
+
+          {mounted && activities.map(activity => (
             <div
-              key={subject.id}
-              className="rounded-2xl border border-neutral-800 p-5 hover:border-neutral-700 transition"
+              key={activity.id}
+              className="rounded-xl border border-neutral-800 p-4"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-medium">
-                    {subject.name}
-                  </h3>
-                  <p className="text-sm text-neutral-500">
-                    {subject.professor} · {subject.credits} credits
-                  </p>
-                </div>
-
-                <span
-                  className={`text-xs uppercase tracking-widest px-3 py-1 rounded-full border ${
-                    subject.risk === "high"
-                      ? "border-red-500/40 text-red-400"
-                      : subject.risk === "medium"
-                      ? "border-yellow-500/40 text-yellow-400"
-                      : "border-green-500/40 text-green-400"
-                  }`}
-                >
-                  {subject.risk} risk
-                </span>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between text-sm text-neutral-400">
-                <div>
-                  {subject.nextDeadline ? (
-                    <>
-                      Next: {subject.nextDeadline.title} ·{" "}
-                      {subject.nextDeadline.days} days
-                    </>
-                  ) : (
-                    "No upcoming deadlines"
-                  )}
-                </div>
-
-                <div className="w-32">
-                  <div className="h-1 rounded-full bg-neutral-800">
-                    <div
-                      className="h-1 rounded-full bg-white"
-                      style={{ width: `${subject.progress}%` }}
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-right">
-                    {subject.progress}%
-                  </p>
-                </div>
-              </div>
+              <p className="font-medium">
+                {activity.title}
+              </p>
+              <p className="text-xs text-neutral-500">
+                Priority: {activity.priority} ·
+                Difficulty: {activity.difficulty}
+                {activity.dueDate && (
+                  <>
+                    {" "}
+                    · Due{" "}
+                    {new Date(
+                      activity.dueDate
+                    ).toLocaleDateString()}
+                  </>
+                )}
+              </p>
             </div>
           ))}
         </section>

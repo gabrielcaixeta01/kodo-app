@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import {
@@ -51,49 +52,58 @@ export function SessionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ inicialização correta (sem effect)
-  const [session, setSession] = useState<Session | null>(() => {
-    if (typeof window === "undefined") return null;
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [session, setSession] = useState<Session | null>(null);
+  const [history, setHistory] = useState<CompletedSession[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  const [history, setHistory] = useState<CompletedSession[]>(() => {
-    if (typeof window === "undefined") return [];
-    const saved = localStorage.getItem(HISTORY_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  /* 🔹 persistir sessão ativa */
+  // Carrega do localStorage após montagem
   useEffect(() => {
+    const savedSession = localStorage.getItem(STORAGE_KEY);
+    if (savedSession) {
+      setSession(JSON.parse(savedSession));
+    }
+
+    const savedHistory = localStorage.getItem(HISTORY_KEY);
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Persiste sessão ativa
+  useEffect(() => {
+    if (!mounted) return;
+    
     if (session) {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(session)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
-  }, [session]);
+  }, [session, mounted]);
 
-  /* 🔹 persistir histórico */
+  // Persiste histórico
   useEffect(() => {
-    localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(history)
-    );
-  }, [history]);
+    if (!mounted) return;
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }, [history, mounted]);
 
   /* =====================
      Actions
   ===================== */
 
   function startSession(actionTitle: string) {
-    setSession({
+    const newSession = {
       id: crypto.randomUUID(),
       actionTitle,
       startedAt: Date.now(),
-    });
+    };
+    setSession(newSession);
   }
 
   function endSession() {
