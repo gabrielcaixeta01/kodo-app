@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const nextAction = decideNextAction(actions, context);
 
   return (
-    <main className="min-h-screen bg-black text-white p-6">
+    <main className="min-h-screen bg-black text-white p-6 pb-16">
       <div className="max-w-xl mx-auto">
         {nextAction ? (
           <NextActionCard

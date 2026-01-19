@@ -8,6 +8,7 @@ const navItems = [
   { label: "Studies", href: "/studies" },
   { label: "Path", href: "/path" },
   { label: "Reflect", href: "/reflect" },
+  { label: "Settings", href: "/settings" },
 ];
 
 export function FooterNav() {
@@ -23,7 +24,7 @@ export function FooterNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm transition ${
+              className={`text-xs transition ${
                 isActive
                   ? "text-white font-medium"
                   : "text-neutral-500 hover:text-neutral-300"
