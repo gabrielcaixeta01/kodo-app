@@ -1,1 +1,0 @@
-"Fórmulas de score"
