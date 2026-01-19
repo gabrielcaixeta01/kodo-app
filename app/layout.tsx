@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { FooterNav } from "@/components/layout/FooterNav";
+import { SessionProvider } from "@/contexts/SessionContext";
+import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
 
 
 export const metadata: Metadata = {
@@ -17,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-white">
-        {children}
-        <FooterNav />
+        <SessionProvider>
+          {children}
+          <ConditionalFooterNav />
+        </SessionProvider>
       </body>
     </html>
   );

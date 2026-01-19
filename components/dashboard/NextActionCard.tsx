@@ -1,4 +1,7 @@
-// components/dashboard/NextActionCard.tsx
+"use client";
+import { useSession } from "@/contexts/SessionContext";
+import { useRouter } from "next/navigation";
+
 
 type Props = {
   title: string;
@@ -13,6 +16,10 @@ export function NextActionCard({
   energyRequired,
   reason,
 }: Props) {
+  const { startSession } = useSession();
+  const router = useRouter();
+
+
   return (
     <div className="rounded-2xl border border-neutral-800 p-6 bg-neutral-950">
       <h2 className="text-xs uppercase tracking-widest text-neutral-500">
@@ -32,7 +39,13 @@ export function NextActionCard({
         {reason}
       </p>
 
-      <button className="mt-6 w-full rounded-xl bg-white text-black py-2 text-sm font-medium hover:opacity-90 transition">
+      <button
+        onClick={() => {
+          startSession(title);
+          router.push("/session");
+        }}
+        className="mt-6 w-full rounded-xl bg-white text-black py-2 text-sm font-medium hover:opacity-90 transition"
+      >
         Start session
       </button>
     </div>
