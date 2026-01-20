@@ -1,10 +1,10 @@
 // app/settings/page.tsx
 
-type EnergyLevel = "low" | "medium" | "high";
+type EnergyLevel = "baixa" | "média" | "alta";
 
 export default function SettingsPage() {
   // mocks (depois vêm do storage)
-  const energy: EnergyLevel = "medium";
+  const energy: EnergyLevel = "média";
   const dailyTime = 120; // minutes
   const focusMode = true;
   const localOnly = true;
@@ -14,27 +14,27 @@ export default function SettingsPage() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <header className="space-y-1">
-          <h1 className="text-2xl font-medium">Settings</h1>
+          <h1 className="text-2xl font-medium">Configurações</h1>
           <p className="text-sm text-neutral-400">
-            Control how KODO works for you
+            Controle como o KODO funciona para você
           </p>
         </header>
 
         {/* Daily Context */}
         <section className="rounded-2xl border border-neutral-800 p-6 space-y-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Daily context
+            Contexto diário
           </h2>
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Energy */}
             <div className="space-y-2">
               <p className="text-sm text-neutral-400">
-                Default energy level
+                Nível de energia padrão
               </p>
 
               <div className="flex gap-2">
-                {(["low", "medium", "high"] as EnergyLevel[]).map(e => (
+                {(["baixa", "média", "alta"] as EnergyLevel[]).map(e => (
                   <button
                     key={e}
                     className={`px-4 py-1.5 rounded-full border text-xs uppercase tracking-widest transition ${
@@ -52,7 +52,7 @@ export default function SettingsPage() {
             {/* Time */}
             <div className="space-y-2">
               <p className="text-sm text-neutral-400">
-                Available time per day
+                Tempo disponível por dia
               </p>
               <p className="text-lg font-medium">
                 {dailyTime} min
@@ -64,14 +64,14 @@ export default function SettingsPage() {
         {/* Decision Behavior */}
         <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Decision behavior
+            Comportamento de decisão
           </h2>
 
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <p className="font-medium">Focus mode</p>
+              <p className="font-medium">Modo foco</p>
               <p className="text-sm text-neutral-400">
-                Suggest only one action at a time
+                Sugere apenas uma ação por vez
               </p>
             </div>
 
@@ -80,7 +80,7 @@ export default function SettingsPage() {
                 focusMode ? "text-green-400" : "text-neutral-500"
               }`}
             >
-              {focusMode ? "Enabled" : "Disabled"}
+              {focusMode ? "Ativado" : "Desativado"}
             </span>
           </div>
         </section>
@@ -88,14 +88,14 @@ export default function SettingsPage() {
         {/* Privacy */}
         <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Privacy
+            Privacidade
           </h2>
 
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <p className="font-medium">Local-only data</p>
+              <p className="font-medium">Dados locais</p>
               <p className="text-sm text-neutral-400">
-                Your data never leaves this device
+                Seus dados nunca saem deste dispositivo
               </p>
             </div>
 
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                 localOnly ? "text-green-400" : "text-neutral-500"
               }`}
             >
-              {localOnly ? "Active" : "Inactive"}
+              {localOnly ? "Ativado" : "Desativado"}
             </span>
           </div>
         </section>
@@ -112,16 +112,16 @@ export default function SettingsPage() {
         {/* System */}
         <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            System
+            Sistema
           </h2>
 
           <div className="grid gap-5 p-2 md:grid-cols-2">
             <button className="rounded-xl border border-neutral-700 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-500 transition">
-              Reset decision learning
+              Resetar aprendizado de decisão
             </button>
 
             <button className="rounded-xl border border-red-500/40 py-2.5 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition">
-              Clear all local data
+              Apagar todos os dados locais
             </button>
           </div>
         </section>

@@ -1,6 +1,6 @@
 // app/path/page.tsx
 
-type PathCategory = "academic" | "career" | "personal" | "health";
+type PathCategory = "acadêmico" | "carreira" | "pessoal" | "saúde";
 
 type Path = {
   id: string;
@@ -8,54 +8,54 @@ type Path = {
   category: PathCategory;
   deadline?: string;
   progress: number; // 0 → 100 (aproximado)
-  alignment: "good" | "warning" | "off-track";
+  alignment: "bom" | "aviso" | "fora-de-trilha";
   description: string;
   linkedActions: string[];
 };
 
 const categoryLabel: Record<PathCategory, string> = {
-  academic: "Academic",
-  career: "Career",
-  personal: "Personal",
-  health: "Health",
+  acadêmico: "Acadêmico",
+  carreira: "Carreira",
+  pessoal: "Pessoal",
+  saúde: "Saúde",
 };
 
 const alignmentColor: Record<Path["alignment"], string> = {
-  good: "text-green-400 border-green-500/40",
-  warning: "text-yellow-400 border-yellow-500/40",
-  "off-track": "text-red-400 border-red-500/40",
+  bom: "text-green-400 border-green-500/40",
+  aviso: "text-yellow-400 border-yellow-500/40",
+  "fora-de-trilha": "text-red-400 border-red-500/40",
 };
 
 export default function PathPage() {
   const paths: Path[] = [
     {
       id: "grad",
-      title: "Graduate in Computer Engineering",
-      category: "academic",
-      deadline: "Dec 2028",
+      title: "Graduar em Engenharia de Computação",
+      category: "acadêmico",
+      deadline: "Dez 2028",
       progress: 55,
-      alignment: "good",
+      alignment: "bom",
       description:
-        "Foundation for long-term career and research opportunities.",
+        "Fundação para oportunidades de carreira e pesquisa a longo prazo.",
       linkedActions: [
-        "Study Sistemas Digitais",
-        "Maintain consistency in core subjects",
-        "Build academic projects",
+        "Estudar Sistemas Digitais",
+        "Manter consistência nas disciplinas principais",
+        "Construir projetos acadêmicos relevantes",
       ],
     },
     {
       id: "portfolio",
-      title: "Build a strong personal portfolio",
-      category: "career",
+      title: "Construir um portfólio pessoal forte",
+      category: "carreira",
       deadline: "Jun 2026",
       progress: 30,
-      alignment: "warning",
+      alignment: "aviso",
       description:
-        "Showcase projects, skills and consistency in engineering work.",
+        "Mostrar projetos, habilidades e consistência no trabalho de engenharia.",
       linkedActions: [
-        "Work on KODO",
-        "Publish projects on GitHub",
-        "Improve frontend polish",
+        "Trabalhar no KODO",
+        "Publicar projetos no GitHub",
+        "Melhorar o polimento do frontend",
       ],
     },
   ];
@@ -65,9 +65,9 @@ export default function PathPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         {/* Header */}
         <header>
-          <h1 className="text-2xl font-medium">Path</h1>
+          <h1 className="text-2xl font-medium">Metas</h1>
           <p className="text-sm text-neutral-400">
-            Your long-term directions
+            Lembre aonde você quer chegar
           </p>
         </header>
 
@@ -105,7 +105,7 @@ export default function PathPage() {
               {/* Progress */}
               <div>
                 <div className="flex justify-between text-xs text-neutral-500 mb-1">
-                  <span>Progress</span>
+                  <span>Progresso</span>
                   <span>{path.progress}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-neutral-800">
@@ -119,7 +119,7 @@ export default function PathPage() {
               {/* Linked Actions */}
               <div>
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
-                  Actions contributing to this path
+                  Ações que contribuem para esta meta
                 </p>
                 <ul className="space-y-1 text-sm text-neutral-400">
                   {path.linkedActions.map(action => (

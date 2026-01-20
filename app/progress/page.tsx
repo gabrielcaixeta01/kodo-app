@@ -3,7 +3,7 @@
 import { useSession } from "@/contexts/SessionContext";
 import { useEffect, useState } from "react";
 
-type AlignmentStatus = "good" | "warning" | "off-track";
+type AlignmentStatus = "bom" | "aviso" | "fora-de-trilha";
 
 function minutesBetween(start: number, end: number) {
   return Math.floor((end - start) / 60000);
@@ -63,25 +63,25 @@ export default function ReflectPage() {
   if (mounted) {
     if (morningSessions > nightSessions) {
       patterns.push(
-        "You focused better during the morning."
+        "Você tende a focar mais pela manhã."
       );
     }
 
     if (nightSessions > morningSessions) {
       patterns.push(
-        "Night sessions were more frequent than expected."
+        "Você tende a focar mais à noite."
       );
     }
 
     if (totalMinutes > 300) {
       patterns.push(
-        "Your total focus time increased this week."
+        "Seu tempo total de foco aumentou esta semana."
       );
     }
 
     if (patterns.length === 0) {
       patterns.push(
-        "Not enough data yet to identify patterns."
+        "Ainda não há dados suficientes para identificar padrões."
       );
     }
   }
@@ -93,17 +93,17 @@ export default function ReflectPage() {
     note: string;
   }[] = [
     {
-      area: "Focus discipline",
+      area: "Disciplina de foco",
       status:
         consistency >= 60
-          ? "good"
+          ? "bom"
           : consistency >= 30
-          ? "warning"
-          : "off-track",
+          ? "aviso"
+          : "fora-de-trilha",
       note:
         consistency >= 60
-          ? "You maintained a consistent study rhythm."
-          : "Try to distribute sessions across more days.",
+          ? "Você manteve um ritmo de estudo consistente."
+          : "Tente distribuir as sessões por mais dias.",
     },
   ];
 
@@ -112,38 +112,38 @@ export default function ReflectPage() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <header>
-          <h1 className="text-2xl font-medium">Reflect</h1>
+          <h1 className="text-2xl font-medium">Progresso</h1>
           <p className="text-sm text-neutral-400">
-            Weekly review
+            Revisão semanal do seu desempenho
           </p>
         </header>
 
         {/* Week summary */}
         <section className="rounded-2xl border border-neutral-800 p-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
-            This week
+            Esta semana
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-neutral-500">Sessions</p>
+              <p className="text-neutral-500">Sessões</p>
               <p className="text-lg">{totalSessions}</p>
             </div>
 
             <div>
-              <p className="text-neutral-500">Focus time</p>
+              <p className="text-neutral-500">Tempo de foco</p>
               <p className="text-lg">
                 {(totalMinutes / 60).toFixed(1)}h
               </p>
             </div>
 
             <div>
-              <p className="text-neutral-500">Consistency</p>
+              <p className="text-neutral-500">Consistência</p>
               <p className="text-lg">{consistency}%</p>
             </div>
 
             <div>
-              <p className="text-neutral-500">Avg / session</p>
+              <p className="text-neutral-500">Tempo por sessão</p>
               <p className="text-lg">
                 {totalSessions
                   ? Math.round(
@@ -159,7 +159,7 @@ export default function ReflectPage() {
         {/* Patterns */}
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Patterns noticed
+            Padrões identificados
           </h2>
 
           <ul className="space-y-2 text-sm text-neutral-400">
@@ -177,7 +177,7 @@ export default function ReflectPage() {
         {/* Alignment */}
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Alignment review
+            Revisão de alinhamento
           </h2>
 
           {alignment.map(item => (
@@ -189,9 +189,9 @@ export default function ReflectPage() {
                 <p className="font-medium">{item.area}</p>
                 <span
                   className={`text-xs uppercase tracking-widest ${
-                    item.status === "good"
+                    item.status === "bom"
                       ? "text-green-400"
-                      : item.status === "warning"
+                      : item.status === "aviso"
                       ? "text-yellow-400"
                       : "text-red-400"
                   }`}
@@ -210,12 +210,12 @@ export default function ReflectPage() {
         {/* System adjustment (informativo) */}
         <section className="rounded-2xl border border-neutral-800 p-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
-            System adjustment
+            Ajuste do sistema
           </h2>
 
           <p className="text-sm text-neutral-400">
-            KODO will gradually favor time slots and action
-            types where you showed higher consistency.
+            KODO irá favorecer gradualmente os horários e tipos de ação
+            onde você mostrou maior consistência.
           </p>
         </section>
       </div>

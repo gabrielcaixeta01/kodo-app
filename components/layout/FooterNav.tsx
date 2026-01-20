@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "Atividades", href: "/" },
   { label: "Estudos", href: "/studies" },
-  { label: "Caminho", href: "/path" },
-  { label: "Refletir", href: "/reflect" },
+  { label: "Objetivos", href: "/goals" },
+  { label: "Progresso", href: "/progress" },
   { label: "Configurações", href: "/settings" },
 ];
 
