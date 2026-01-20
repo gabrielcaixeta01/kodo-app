@@ -15,7 +15,7 @@ function getDateInputValue(timestamp?: number) {
 export default function ActivityPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const { activities, updateActivity } = useActivities();
+  const { activities, updateActivity, deleteActivity } = useActivities();
 
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
@@ -57,6 +57,14 @@ export default function ActivityPage() {
         : undefined,
     });
 
+    router.push("/studies");
+  }
+
+  function handleDelete() {
+    if (!activity) return;
+    if (!confirm(`Tem certeza que deseja excluir "${activity.title}"?`)) return;
+    
+    deleteActivity(activity.id);
     router.push("/studies");
   }
 
@@ -178,6 +186,13 @@ export default function ActivityPage() {
                   className="rounded-xl border border-neutral-800 px-4 py-2 text-sm text-neutral-400 hover:text-white hover:border-white/20 transition"
                 >
                   Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="rounded-xl border border-red-500/40 px-4 py-2 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition ml-auto"
+                >
+                  Excluir
                 </button>
               </div>
             </form>

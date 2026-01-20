@@ -18,6 +18,7 @@ type ActivityContextType = {
     id: string,
     data: Partial<Omit<Activity, "id" | "createdAt">>
   ) => void;
+  deleteActivity: (id: string) => void;
 };
 
 const ActivityContext =
@@ -53,6 +54,7 @@ export function ActivityProvider({
         id: crypto.randomUUID(),
         createdAt: Date.now(),
         ...data,
+        status: data.status || "pending",
       },
       ...prev,
     ]);
@@ -71,8 +73,12 @@ export function ActivityProvider({
     );
   };
 
+  const deleteActivity = (id: string) => {
+    setActivities(prev => prev.filter(activity => activity.id !== id));
+  };
+
   const value = useMemo(
-    () => ({ activities, addActivity, updateActivity }),
+    () => ({ activities, addActivity, updateActivity, deleteActivity }),
     [activities]
   );
 

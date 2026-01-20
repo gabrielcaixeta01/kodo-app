@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function SessionPage() {
-  const { session, endSession } = useSession();
+  const { session, endSession, interruptSession } = useSession();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
@@ -18,7 +18,7 @@ export default function SessionPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 🔹 redireciona se não houver sessão
+  // redireciona se não houver sessão
   useEffect(() => {
     if (!mounted) return;
 
@@ -28,7 +28,7 @@ export default function SessionPage() {
     }
   }, [mounted, session, router]);
 
-  // 🔹 controla o tempo
+  // controla o tempo
   useEffect(() => {
     if (!mounted || !session) return;
 
@@ -43,7 +43,7 @@ export default function SessionPage() {
     return () => clearInterval(interval);
   }, [mounted, session]);
 
-  // 🔒 guarda de render
+  // guarda de render
   if (!mounted) return null;
   if (!session) return null;
 
@@ -51,12 +51,12 @@ export default function SessionPage() {
     <main className="min-h-screen bg-black text-white p-6 flex items-center justify-center">
       <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-6 space-y-6">
         <h1 className="text-xl font-medium">
-          Focus session
+          Sessão de foco
         </h1>
 
         <div className="space-y-1">
           <p className="text-sm text-neutral-400">
-            Current action
+            Atividade atual
           </p>
           <p className="text-lg font-medium">
             {session.actionTitle}
@@ -64,18 +64,30 @@ export default function SessionPage() {
         </div>
 
         <p className="text-sm text-neutral-500">
-          Elapsed time: {elapsedMinutes} min
+          Tempo decorrido: {elapsedMinutes} min
         </p>
 
-        <button
-          onClick={() => {
-            endSession();
-            router.replace("/reflect");
-          }}
-          className="w-full rounded-xl border border-red-500/40 py-2 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition"
-        >
-          End session
-        </button>
+        <div className="space-y-3">
+          <button
+            onClick={() => {
+              endSession();
+              router.replace("/progress");
+            }}
+            className="w-full rounded-xl border border-green-500/40 py-2 text-sm text-green-400 hover:border-green-500 hover:text-green-300 transition"
+          >
+            Concluir sessão
+          </button>
+
+          <button
+            onClick={() => {
+              interruptSession();
+              router.replace("/");
+            }}
+            className="w-full rounded-xl border border-yellow-500/40 py-2 text-sm text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition"
+          >
+            Interromper sessão
+          </button>
+        </div>
       </div>
     </main>
   );
