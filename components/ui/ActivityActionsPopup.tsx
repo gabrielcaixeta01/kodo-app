@@ -44,7 +44,7 @@ export function ActivityActionsPopup({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={onClose}
     >
       {/* Overlay */}

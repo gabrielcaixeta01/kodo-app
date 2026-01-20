@@ -7,6 +7,7 @@ import { getRankedActions } from "@/lib/decision/getRankedActions";
 import { activityToAction } from "@/lib/decision/activityToAction";
 import { useEffect, useState } from "react";
 import { MonthCalendar } from "@/components/ui/MonthCalendar";
+import { WeeklyActivityChart } from "@/components/ui/WeeklyActivityChart";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -77,6 +78,9 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-medium">Dashboard</h1>
           <p className="text-sm text-neutral-400">Decida o que fazer agora</p>
         </header>
+
+        
+        <MonthCalendar />
 
         {/* Skeleton Loader */}
         {!mounted && (
@@ -162,7 +166,7 @@ export default function DashboardPage() {
           </section>
         )}
 
-        <MonthCalendar />
+        
 
         {/* Other good options */}
         {mounted && otherActions.length > 0 && (
@@ -220,6 +224,8 @@ export default function DashboardPage() {
             ))}
           </section>
         )}
+
+        <WeeklyActivityChart />
       </div>
     </main>
   );
