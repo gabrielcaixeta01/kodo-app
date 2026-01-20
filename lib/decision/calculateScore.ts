@@ -12,11 +12,11 @@ function urgency(days?: number) {
 
 function impactWeight(impact: Action["impact"]) {
   switch (impact) {
-    case "high":
+    case "alta":
       return 1.0;
-    case "medium":
+    case "média":
       return 0.7;
-    case "low":
+    case "baixa":
       return 0.4;
   }
 }
@@ -30,9 +30,9 @@ function energyMatch(
   required: Energy
 ) {
   if (current === required) return 1.0;
-  if (current === "high" && required === "medium") return 0.9;
-  if (current === "medium" && required === "high") return 0.7;
-  if (current === "low" && required === "high") return 0.3;
+  if (current === "alta" && required === "média") return 0.9;
+  if (current === "média" && required === "alta") return 0.7;
+  if (current === "baixa" && required === "alta") return 0.3;
   return 0.8;
 }
 

@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
   const context = {
     availableTime: 60,
-    energy: "medium" as const,
+    energy: "média" as const,
   };
 
   const actions = mounted ? activities.map(activityToAction) : [];
@@ -40,8 +40,8 @@ export default function DashboardPage() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <header>
-          <h1 className="text-2xl font-medium">Dashboard</h1>
-          <p className="text-sm text-neutral-400">Decide what to do now</p>
+          <h1 className="text-2xl font-medium">Atividades</h1>
+          <p className="text-sm text-neutral-400">Decida o que fazer agora</p>
         </header>
 
         {/* Skeleton Loader */}
@@ -56,7 +56,7 @@ export default function DashboardPage() {
         {/* Empty state */}
         {mounted && rankedActions.length === 0 && (
           <p className="text-sm text-neutral-500">
-            No activities available. Add activities in Studies.
+            Nenhuma atividade disponível. Adicione atividades em Estudos.
           </p>
         )}
 
@@ -64,13 +64,13 @@ export default function DashboardPage() {
         {mounted && nextAction && (
           <section className="rounded-2xl border border-neutral-700 p-6 space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-neutral-400">
-              Next right action
+              Atividade recomendada
             </h2>
 
             <p className="text-lg font-medium">{nextAction.title}</p>
 
             <p className="text-sm text-neutral-500">
-              Estimated time: {nextAction.estimatedTime} min
+              Tempo estimado: {nextAction.estimatedTime} min
             </p>
 
             <button
@@ -78,7 +78,7 @@ export default function DashboardPage() {
               disabled={!!session}
               className="rounded-xl border border-white/20 px-4 py-2 text-sm hover:border-white/40 transition disabled:opacity-50"
             >
-              Start focus session
+              Iniciar sessão de foco
             </button>
           </section>
         )}
@@ -87,7 +87,7 @@ export default function DashboardPage() {
         {mounted && otherActions.length > 0 && (
           <section className="space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-              Other good options
+              Outras boas opções
             </h2>
 
             {otherActions.map(action => (
@@ -98,7 +98,7 @@ export default function DashboardPage() {
                 <div>
                   <p className="font-medium">{action.title}</p>
                   <p className="text-xs text-neutral-500">
-                    {action.estimatedTime} min · {action.energyRequired} energy
+                    {action.estimatedTime} min · {action.energyRequired} energia
                   </p>
                 </div>
 
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                   disabled={!!session}
                   className="text-xs text-neutral-400 hover:text-white transition disabled:opacity-50"
                 >
-                  Start anyway
+                  Iniciar atividade
                 </button>
               </div>
             ))}

@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { Activity } from "@/types/activity";
@@ -12,6 +13,10 @@ type ActivityContextType = {
   activities: Activity[];
   addActivity: (
     data: Omit<Activity, "id" | "createdAt">
+  ) => void;
+  updateActivity: (
+    id: string,
+    data: Partial<Omit<Activity, "id" | "createdAt">>
   ) => void;
 };
 
@@ -40,9 +45,9 @@ export function ActivityProvider({
     );
   }, [activities]);
 
-  function addActivity(
+  const addActivity = (
     data: Omit<Activity, "id" | "createdAt">
-  ) {
+  ) => {
     setActivities(prev => [
       {
         id: crypto.randomUUID(),
@@ -51,12 +56,28 @@ export function ActivityProvider({
       },
       ...prev,
     ]);
-  }
+  };
+
+  const updateActivity = (
+    id: string,
+    data: Partial<Omit<Activity, "id" | "createdAt">>
+  ) => {
+    setActivities(prev =>
+      prev.map(activity =>
+        activity.id === id
+          ? { ...activity, ...data }
+          : activity
+      )
+    );
+  };
+
+  const value = useMemo(
+    () => ({ activities, addActivity, updateActivity }),
+    [activities]
+  );
 
   return (
-    <ActivityContext.Provider
-      value={{ activities, addActivity }}
-    >
+    <ActivityContext.Provider value={value}>
       {children}
     </ActivityContext.Provider>
   );

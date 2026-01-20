@@ -1,5 +1,5 @@
-export type Difficulty = "low" | "medium" | "high";
-export type Priority = "low" | "medium" | "high";
+export type Difficulty = "baixa" | "média" | "alta";
+export type Priority = "baixa" | "média" | "alta";
 
 export type Activity = {
   id: string;

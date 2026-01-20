@@ -8,17 +8,17 @@ export function activityToAction(
     id: activity.id,
     title: activity.title,
     estimatedTime:
-      activity.difficulty === "high"
+      activity.difficulty === "alta"
         ? 60
-        : activity.difficulty === "medium"
+        : activity.difficulty === "média"
         ? 40
         : 20,
     impact:
-      activity.priority === "high"
-        ? "high"
-        : activity.priority === "medium"
-        ? "medium"
-        : "low",
+      activity.priority === "alta"
+        ? "alta"
+        : activity.priority === "média"
+        ? "média"
+        : "baixa",
     daysToDeadline: activity.dueDate
       ? Math.max(
           0,
@@ -30,10 +30,10 @@ export function activityToAction(
       : undefined,
     relatedPaths: 1,
     energyRequired:
-      activity.difficulty === "high"
-        ? "high"
-        : activity.difficulty === "medium"
-        ? "medium"
-        : "low",
+      activity.difficulty === "alta"
+        ? "alta"
+        : activity.difficulty === "média"
+        ? "média"
+        : "baixa",
   };
 }

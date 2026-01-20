@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { label: "Dashboard", href: "/" },
-  { label: "Studies", href: "/studies" },
-  { label: "Path", href: "/path" },
-  { label: "Reflect", href: "/reflect" },
-  { label: "Settings", href: "/settings" },
+  { label: "Atividades", href: "/" },
+  { label: "Estudos", href: "/studies" },
+  { label: "Caminho", href: "/path" },
+  { label: "Refletir", href: "/reflect" },
+  { label: "Configurações", href: "/settings" },
 ];
 
 export function FooterNav() {
@@ -16,7 +16,7 @@ export function FooterNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t border-neutral-800 bg-black/80 backdrop-blur">
-      <div className="mx-auto max-w-3xl flex justify-around py-3">
+      <div className="mx-auto max-w-3xl flex justify-around py-5">
         {navItems.map(item => {
           const isActive = pathname === item.href;
 

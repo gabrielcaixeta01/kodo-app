@@ -7,15 +7,15 @@ export type Action = {
   title: string;
   estimatedTime: number; // minutes
   daysToDeadline?: number;
-  impact: "low" | "medium" | "high";
+  impact: "baixa" | "média" | "alta";
   relatedPaths: number;
   energyRequired: EnergyLevel;
 };
 
 const impactScore = {
-  low: 0.4,
-  medium: 0.7,
-  high: 1.0,
+  baixa: 0.4,
+  média: 0.7,
+  alta: 1.0,
 };
 
 const energyMatrix: Record<

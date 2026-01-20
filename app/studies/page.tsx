@@ -6,6 +6,8 @@ import {
   Difficulty,
   Priority,
 } from "@/types/activity";
+import { useRouter } from "next/navigation";
+
 
 export default function StudiesPage() {
   const { activities, addActivity } =
@@ -14,10 +16,11 @@ export default function StudiesPage() {
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
   const [difficulty, setDifficulty] =
-    useState<Difficulty>("medium");
+    useState<Difficulty>("média");
   const [priority, setPriority] =
-    useState<Priority>("medium");
+    useState<Priority>("média");
   const [dueDate, setDueDate] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,8 +43,8 @@ export default function StudiesPage() {
     });
 
     setTitle("");
-    setDifficulty("medium");
-    setPriority("medium");
+    setDifficulty("média");
+    setPriority("média");
     setDueDate("");
   }
 
@@ -50,17 +53,17 @@ export default function StudiesPage() {
       <div className="max-w-3xl mx-auto space-y-10">
         <header>
           <h1 className="text-2xl font-medium">
-            Studies
+            Estudos
           </h1>
           <p className="text-sm text-neutral-400">
-            Activities that require action
+            Atividades que requerem ação
           </p>
         </header>
 
         {/* Add activity */}
         <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Add activity
+            Adicionar atividade
           </h2>
 
           <form
@@ -72,7 +75,7 @@ export default function StudiesPage() {
               onChange={e =>
                 setTitle(e.target.value)
               }
-              placeholder="Activity title"
+              placeholder="Título da atividade"
               className="w-full rounded-xl bg-black border border-neutral-700 px-4 py-2 text-sm focus:outline-none"
             />
 
@@ -86,14 +89,14 @@ export default function StudiesPage() {
                 }
                 className="rounded-xl bg-black border border-neutral-700 px-3 py-2 text-sm"
               >
-                <option value="low">
-                  Low difficulty
+                <option value="baixa">
+                  Baixa dificuldade
                 </option>
-                <option value="medium">
-                  Medium difficulty
+                <option value="média">
+                  Dificuldade média
                 </option>
-                <option value="high">
-                  High difficulty
+                <option value="alta">
+                  Alta dificuldade
                 </option>
               </select>
 
@@ -106,14 +109,14 @@ export default function StudiesPage() {
                 }
                 className="rounded-xl bg-black border border-neutral-700 px-3 py-2 text-sm"
               >
-                <option value="low">
-                  Low priority
+                <option value="baixa">
+                  Baixa prioridade
                 </option>
-                <option value="medium">
-                  Medium priority
+                <option value="média">
+                  Prioridade média
                 </option>
-                <option value="high">
-                  High priority
+                <option value="alta">
+                  Alta prioridade
                 </option>
               </select>
 
@@ -131,7 +134,7 @@ export default function StudiesPage() {
               type="submit"
               className="rounded-xl border border-white/20 px-4 py-2 text-sm hover:border-white/40 transition"
             >
-              Add activity
+              Adicionar atividade
             </button>
           </form>
         </section>
@@ -139,36 +142,37 @@ export default function StudiesPage() {
         {/* Activities list */}
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Activities
+            Atividades
           </h2>
 
           {!mounted && (
             <p className="text-sm text-neutral-500">
-              Loading activities...
+              Carregando atividades...
             </p>
           )}
 
           {mounted && activities.length === 0 && (
             <p className="text-sm text-neutral-500">
-              No activities yet.
+              Nenhuma atividade ainda.
             </p>
           )}
 
           {mounted && activities.map(activity => (
             <div
               key={activity.id}
+              onClick={() => router.push(`/activity/${activity.id}`)}
               className="rounded-xl border border-neutral-800 p-4"
             >
               <p className="font-medium">
                 {activity.title}
               </p>
               <p className="text-xs text-neutral-500">
-                Priority: {activity.priority} ·
-                Difficulty: {activity.difficulty}
+                Prioridade: {activity.priority} ·
+                Dificuldade: {activity.difficulty}
                 {activity.dueDate && (
                   <>
                     {" "}
-                    · Due{" "}
+                    · Prazo{" "}
                     {new Date(
                       activity.dueDate
                     ).toLocaleDateString()}

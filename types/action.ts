@@ -1,5 +1,5 @@
-export type Impact = "low" | "medium" | "high";
-export type Energy = "low" | "medium" | "high";
+export type Impact = "baixa" | "média" | "alta";
+export type Energy = "baixa" | "média" | "alta";
 
 export type Action = {
   id: string;
