@@ -29,6 +29,7 @@ export default function StudiesPage() {
   const [startX, setStartX] = useState(0);
   const [offsets, setOffsets] = useState<Record<string, number>>({});
   const [clickTimes, setClickTimes] = useState<Record<string, number>>({});
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -93,7 +94,19 @@ export default function StudiesPage() {
     const offset = offsets[id] || 0;
 
     if (offset < DELETE_THRESHOLD) {
-      deleteActivity(id);
+      // Marca como deletando e anima
+      setDeletingIds(prev => new Set(prev).add(id));
+      setOffsets(prev => ({ ...prev, [id]: -300 })); // Desliza para fora
+      
+      // Deleta após a animação
+      setTimeout(() => {
+        deleteActivity(id);
+        setDeletingIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+      }, 300);
     } else {
       setOffsets(prev => ({ ...prev, [id]: 0 }));
     }
@@ -217,7 +230,7 @@ export default function StudiesPage() {
             const statusColors = {
               pending: "border-neutral-800",
               in_progress: "border-blue-500/30 bg-blue-500/5",
-              interrupted: "border-yellow-500/30 bg-yellow-500/5",
+              interrupted: "border-neutral-800",
               completed: "border-green-500/30 bg-green-500/5",
             };
             const statusLabels = {
@@ -226,13 +239,27 @@ export default function StudiesPage() {
               interrupted: "Interrompida",
               completed: "Concluída",
             };
-            const canDelete = activity.status === "pending" || activity.status === "in_progress";
+            const canDelete = activity.status === "pending" || activity.status === "interrupted";
+            const offset = offsets[activity.id] || 0;
+            const showDelete = offset < -10; // Mostra quando arrasta pelo menos 10px
+            const isDeleting = deletingIds.has(activity.id);
             
             return (
-              <div key={activity.id} className="relative overflow-hidden">
-                {/* Fundo delete - só mostra para pending e in_progress */}
+              <div 
+                key={activity.id} 
+                className="relative overflow-hidden transition-all duration-300"
+                style={{
+                  opacity: isDeleting ? 0 : 1,
+                  maxHeight: isDeleting ? 0 : "200px",
+                  marginBottom: isDeleting ? 0 : undefined,
+                }}
+              >
+                {/* Fundo delete - só mostra para pending e interrupted */}
                 {canDelete && (
-                  <div className="absolute inset-0 rounded-lg bg-red-500/20 flex items-center justify-end pr-4">
+                  <div 
+                    className="absolute inset-0 rounded-lg bg-red-500/20 flex items-center justify-end pr-4 transition-opacity duration-200"
+                    style={{ opacity: showDelete ? 1 : 0 }}
+                  >
                     <span className="text-red-400 text-sm font-medium">
                       Excluir
                     </span>
@@ -261,14 +288,15 @@ export default function StudiesPage() {
                     transition:
                       draggingId === activity.id
                         ? "none"
-                        : "transform 0.25s ease-out",
+                        : "transform 0.3s ease-out, opacity 0.3s ease-out",
+                    opacity: isDeleting ? 0 : 1,
                   }}
-                  className={`relative z-10 rounded-xl border p-4 bg-black cursor-pointer ${statusColors[activity.status || "pending"]}`}
+                  className={`relative z-10 rounded-xl border p-4 bg-black cursor-pointer ${statusColors[activity.status]}`}
                 >
                   <div className="flex justify-between">
                     <p className="font-medium">{activity.title}</p>
                     <span className="text-xs text-neutral-400">
-                      {statusLabels[activity.status || "pending"]}
+                      {statusLabels[activity.status]}
                     </span>
                   </div>
 
