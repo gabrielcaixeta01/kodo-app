@@ -6,6 +6,7 @@ import { useActivities } from "@/contexts/ActivityContext";
 import { getRankedActions } from "@/lib/decision/getRankedActions";
 import { activityToAction } from "@/lib/decision/activityToAction";
 import { useEffect, useState } from "react";
+import { MonthCalendar } from "@/components/ui/MonthCalendar";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -73,7 +74,7 @@ export default function DashboardPage() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <header>
-          <h1 className="text-2xl font-medium">Atividades</h1>
+          <h1 className="text-2xl font-medium">Dashboard</h1>
           <p className="text-sm text-neutral-400">Decida o que fazer agora</p>
         </header>
 
@@ -160,6 +161,8 @@ export default function DashboardPage() {
             </button>
           </section>
         )}
+
+        <MonthCalendar />
 
         {/* Other good options */}
         {mounted && otherActions.length > 0 && (

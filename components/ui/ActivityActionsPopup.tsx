@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Activity, Difficulty, Priority } from "@/types/activity";
 import { useActivities } from "@/contexts/ActivityContext";
+import { dateStringToTimestamp, timestampToDateString } from "@/lib/dateUtils";
 
 interface Props {
   activity: Activity;
@@ -22,9 +23,7 @@ export function ActivityActionsPopup({
   const [difficulty, setDifficulty] = useState<Difficulty>(activity.difficulty);
   const [priority, setPriority] = useState<Priority>(activity.priority);
   const [dueDate, setDueDate] = useState(
-    activity.dueDate
-      ? new Date(activity.dueDate).toISOString().split("T")[0]
-      : ""
+    activity.dueDate ? timestampToDateString(activity.dueDate) : ""
   );
 
   if (!isOpen) return null;
@@ -37,7 +36,7 @@ export function ActivityActionsPopup({
       title: title.trim(),
       difficulty,
       priority,
-      dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
+      dueDate: dueDate ? dateStringToTimestamp(dueDate) : undefined,
     });
 
     onClose();

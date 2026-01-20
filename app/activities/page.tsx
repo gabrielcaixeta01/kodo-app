@@ -9,6 +9,7 @@ import {
 import { AddActivityForm } from "@/components/ui/AddActivityForm";
 import { ActivityCard } from "@/components/ui/ActivityCard";
 import { useSwipeDelete } from "@/hooks/useSwipeDelete";
+import { dateStringToTimestamp } from "@/lib/dateUtils";
 
 
 export default function StudiesPage() {
@@ -59,9 +60,7 @@ export default function StudiesPage() {
       title: title.trim(),
       difficulty,
       priority,
-      dueDate: dueDate
-        ? new Date(dueDate).getTime()
-        : undefined,
+      dueDate: dueDate ? dateStringToTimestamp(dueDate) : undefined,
       status: "pending",
     });
 
@@ -72,14 +71,14 @@ export default function StudiesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 select-none pb-20">
+    <main className="min-h-screen bg-black text-white p-6 pb-20">
       <div className="max-w-3xl mx-auto space-y-10">
         <header>
           <h1 className="text-2xl font-medium">
-            Estudos
+            Atividades
           </h1>
           <p className="text-sm text-neutral-400">
-            Atividades que requerem ação
+            Gerencie suas atividades para alcançar seus objetivos
           </p>
         </header>
 
