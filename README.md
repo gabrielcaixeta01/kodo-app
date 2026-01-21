@@ -8,16 +8,16 @@ Ele é um **método**.
 
 ---
 
-## 🧭 Filosofia
+## Filosofia
 
 > Clareza antes da ação.
 > Ação correta, repetida com disciplina, constrói resultados.
 
-O KODO foi criado inicialmente como uma ferramenta pessoal para estudos universitários e objetivos de longo prazo, com a visão de evoluir para um produto público focado em produtividade consciente e tomada de decisão.
+O KODO é uma ferramenta pessoal para auxiliar na constância.
 
 ---
 
-## 🎯 Objetivo do Projeto
+## Objetivo do Projeto
 
 * Ajudar o usuário a **decidir o que fazer agora**
 * Reduzir sobrecarga mental e indecisão
@@ -27,42 +27,18 @@ O KODO foi criado inicialmente como uma ferramenta pessoal para estudos universi
 
 ---
 
-## ✨ O que o KODO NÃO é
+## Funcionalidades (MVP)
 
-* ❌ Um simples checklist
-* ❌ Um app de frases motivacionais
-* ❌ Uma rede social
-* ❌ Gamificação exagerada
+### App em geral
 
----
-
-## ✅ O que o KODO é
-
-* ✅ Um sistema pessoal de decisão
-* ✅ Um assistente de estudos e objetivos
-* ✅ Um organizador orientado a impacto
-* ✅ Um produto minimalista, sério e focado em longo prazo
-
----
-
-## 🧠 Funcionalidades (MVP)
-
-### 🎓 Estudos
-
-* Cadastro de disciplinas
+* Cadastro de atividades
 * Planejamento de provas e trabalhos
-* Sessões de estudo registradas
+* Modo foco para realizar as atividades
 * Visão de risco por disciplina
 
-### 🎯 Objetivos
+### Decisão
 
-* Objetivos acadêmicos e pessoais
-* Quebra em ações práticas
-* Progresso visual contínuo
-
-### 🧭 Decisão
-
-* Sugestão da **próxima ação correta**
+* Sugestão da **próxima atividade recomendada**
 * Priorização baseada em:
 
   * prazo
@@ -72,17 +48,7 @@ O KODO foi criado inicialmente como uma ferramenta pessoal para estudos universi
 
 ---
 
-## 🔮 Visão futura
-
-* Sistema inteligente de sugestões
-* Aprendizado baseado em padrões do usuário
-* Estimativa automática de tempo
-* Previsão de risco acadêmico
-* Privacidade como princípio (local-first)
-
----
-
-## 🛠️ Stack Tecnológica (Planejada)
+## Stack Tecnológica (Planejada)
 
 ### Frontend
 
@@ -94,30 +60,6 @@ O KODO foi criado inicialmente como uma ferramenta pessoal para estudos universi
 
 * Node.js / NestJS
 * PostgreSQL
-
-### Inteligência
-
-* Inicialmente regras determinísticas
-* Evolução para Machine Learning leve
-* Possível integração com IA generativa como interface
-
----
-
-## 📌 Status do Projeto
-
-🚧 Em desenvolvimento inicial
-Atualmente focado em:
-
-* definição de arquitetura
-* experiência do usuário
-* sistema de decisão
-
----
-
-## 📄 Licença
-
-Este projeto começou como uma ferramenta pessoal e poderá evoluir para um produto público no futuro.
-Licença será definida conforme a maturidade do projeto.
 
 ---
 
