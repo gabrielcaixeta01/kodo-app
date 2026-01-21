@@ -2,27 +2,32 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Activity } from "@/types/activity";
+
+type Activity = {
+  id: string;
+  title: string;
+  status: "pending" | "in_progress" | "interrupted" | "completed";
+  estimatedTime: number;
+  energyRequired: "baixa" | "média" | "alta";
+  createdAt: number;
+  updatedAt: number;
+};
 
 type ActivityContextType = {
   activities: Activity[];
-  addActivity: (
-    data: Omit<Activity, "id" | "createdAt">
-  ) => void;
-  updateActivity: (
-    id: string,
-    data: Partial<Omit<Activity, "id" | "createdAt">>
-  ) => void;
+  addActivity: (title: string, estimatedTime: number, energyRequired: Activity["energyRequired"]) => void;
+  updateActivity: (id: string, updates: Partial<Activity>) => void;
   deleteActivity: (id: string) => void;
+  resetWeeklyActivities: () => void;
 };
 
-const ActivityContext =
-  createContext<ActivityContextType | null>(null);
+const ActivityContext = createContext<ActivityContextType | null>(null);
 
 const STORAGE_KEY = "kodo:activities";
 
@@ -31,55 +36,71 @@ export function ActivityProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [activities, setActivities] = useState<Activity[]>(
-    () => {
-      if (typeof window === "undefined") return [];
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  // Carrega do localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setTimeout(() => {
+        setActivities(JSON.parse(saved));
+      }, 0);
     }
+    setTimeout(() => {
+      setMounted(true);
+    }, 0);
+  }, []);
+
+  // Persiste no localStorage
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(activities));
+  }, [activities, mounted]);
+
+  const addActivity = useCallback(
+    (title: string, estimatedTime: number, energyRequired: Activity["energyRequired"]) => {
+      const newActivity: Activity = {
+        id: crypto.randomUUID(),
+        title,
+        status: "pending",
+        estimatedTime,
+        energyRequired,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      setActivities(prev => [newActivity, ...prev]);
+    },
+    []
   );
 
-  useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(activities)
-    );
-  }, [activities]);
-
-  const addActivity = (
-    data: Omit<Activity, "id" | "createdAt">
-  ) => {
-    setActivities(prev => [
-      {
-        id: crypto.randomUUID(),
-        createdAt: Date.now(),
-        ...data,
-        status: data.status || "pending",
-      },
-      ...prev,
-    ]);
-  };
-
-  const updateActivity = (
-    id: string,
-    data: Partial<Omit<Activity, "id" | "createdAt">>
-  ) => {
+  const updateActivity = useCallback((id: string, updates: Partial<Activity>) => {
     setActivities(prev =>
       prev.map(activity =>
         activity.id === id
-          ? { ...activity, ...data }
+          ? { ...activity, ...updates, updatedAt: Date.now() }
           : activity
       )
     );
-  };
+  }, []);
 
-  const deleteActivity = (id: string) => {
+  const deleteActivity = useCallback((id: string) => {
     setActivities(prev => prev.filter(activity => activity.id !== id));
-  };
+  }, []);
+
+  const resetWeeklyActivities = useCallback(() => {
+    setActivities([]);
+  }, []);
 
   const value = useMemo(
-    () => ({ activities, addActivity, updateActivity, deleteActivity }),
-    [activities]
+    () => ({
+      activities,
+      addActivity,
+      updateActivity,
+      deleteActivity,
+      resetWeeklyActivities,
+    }),
+    [activities, addActivity, updateActivity, deleteActivity, resetWeeklyActivities]
   );
 
   return (
@@ -92,9 +113,7 @@ export function ActivityProvider({
 export function useActivities() {
   const ctx = useContext(ActivityContext);
   if (!ctx) {
-    throw new Error(
-      "useActivities must be used inside ActivityProvider"
-    );
+    throw new Error("useActivities must be used inside ActivityProvider");
   }
   return ctx;
 }

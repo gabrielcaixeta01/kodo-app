@@ -1,36 +1,24 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import type { Metadata } from "next";
 import { SessionProvider } from "@/contexts/SessionContext";
-import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
 import { ActivityProvider } from "@/contexts/ActivityContext";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-};
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kodo App",
-  description: "KODO — Structure enables discipline.",
+  title: "Kodo",
+  description: "Sistema de gerenciamento de atividades",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-
+}) {
   return (
-    <html lang="en">
-      <body className="bg-black text-white select-none" style={{ touchAction: 'pan-y' }}>
-        <ActivityProvider>
-          <SessionProvider>
-            {children}
-            <ConditionalFooterNav />
-          </SessionProvider>
-        </ActivityProvider>
+    <html lang="pt-BR">
+      <body>
+        <SessionProvider>
+          <ActivityProvider>{children}</ActivityProvider>
+        </SessionProvider>
       </body>
     </html>
   );

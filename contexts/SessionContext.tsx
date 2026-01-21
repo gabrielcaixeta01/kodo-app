@@ -19,6 +19,7 @@ type Session = {
   actionTitle: string;
   activityId?: string;
   startedAt: number;
+  completionPercentage: number;
 };
 
 type CompletedSession = {
@@ -26,7 +27,9 @@ type CompletedSession = {
   actionTitle: string;
   activityId?: string;
   startedAt: number;
-  endedAt: number;
+  completedAt: number;
+  durationMinutes: number;
+  completionPercentage: number;
 };
 
 type InterruptedSession = {
@@ -46,6 +49,7 @@ type SessionContextType = {
   endSession: () => void;
   interruptSession: () => void;
   resumeSession: (interruptedSessionId: string) => void;
+  updateSessionProgress: (completionPercentage: number) => void;
   resetWeeklyProgress: () => void;
 };
 
@@ -53,9 +57,7 @@ type SessionContextType = {
    Context
 ===================== */
 
-const SessionContext = createContext<SessionContextType | null>(
-  null
-);
+const SessionContext = createContext<SessionContextType | null>(null);
 
 const STORAGE_KEY = "kodo:active-session";
 const HISTORY_KEY = "kodo:session-history";
@@ -91,19 +93,14 @@ export function SessionProvider({
     if (savedInterrupted) {
       setInterrupted(JSON.parse(savedInterrupted));
     }
-  }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 0);
-    return () => clearTimeout(timer);
+    setMounted(true);
   }, []);
 
   // Persiste sessão ativa
   useEffect(() => {
     if (!mounted) return;
-    
+
     if (session) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     } else {
@@ -128,24 +125,37 @@ export function SessionProvider({
   ===================== */
 
   const startSession = useCallback((actionTitle: string, activityId?: string) => {
-    const newSession = {
+    const newSession: Session = {
       id: crypto.randomUUID(),
       actionTitle,
       activityId,
       startedAt: Date.now(),
+      completionPercentage: 0,
     };
     setSession(newSession);
   }, []);
 
+  const updateSessionProgress = useCallback((completionPercentage: number) => {
+    if (!session) return;
+
+    setSession(prev => 
+      prev ? { ...prev, completionPercentage: Math.min(100, Math.max(0, completionPercentage)) } : null
+    );
+  }, [session]);
+
   const endSession = useCallback(() => {
     if (!session) return;
+
+    const durationMinutes = Math.round((Date.now() - session.startedAt) / 60000);
 
     const completed: CompletedSession = {
       id: session.id,
       actionTitle: session.actionTitle,
       activityId: session.activityId,
       startedAt: session.startedAt,
-      endedAt: Date.now(),
+      completedAt: Date.now(),
+      durationMinutes,
+      completionPercentage: session.completionPercentage,
     };
 
     setHistory(prev => [completed, ...prev]);
@@ -155,19 +165,13 @@ export function SessionProvider({
   const interruptSession = useCallback(() => {
     if (!session) return;
 
-    const elapsed = Date.now() - session.startedAt;
-    const elapsedMinutes = elapsed / 60000;
-    // Assume 60 minutos como tempo padrão esperado
-    const expectedMinutes = 60;
-    const percentage = Math.min(100, Math.round((elapsedMinutes / expectedMinutes) * 100));
-
     const interruptedSession: InterruptedSession = {
       id: session.id,
       actionTitle: session.actionTitle,
       activityId: session.activityId,
       startedAt: session.startedAt,
       interruptedAt: Date.now(),
-      completionPercentage: percentage,
+      completionPercentage: session.completionPercentage,
     };
 
     setInterrupted(prev => [interruptedSession, ...prev]);
@@ -178,29 +182,21 @@ export function SessionProvider({
     const interruptedSession = interrupted.find(s => s.id === interruptedSessionId);
     if (!interruptedSession) return;
 
-    // Calcula o tempo já decorrido baseado na porcentagem
-    const expectedMinutes = 60;
-    const elapsedMinutes = (interruptedSession.completionPercentage / 100) * expectedMinutes;
-    const elapsedMs = elapsedMinutes * 60000;
-
-    // Cria nova sessão com startedAt ajustado para manter o progresso
     const resumedSession: Session = {
       id: interruptedSession.id,
       actionTitle: interruptedSession.actionTitle,
       activityId: interruptedSession.activityId,
-      startedAt: Date.now() - elapsedMs,
+      startedAt: Date.now(),
+      completionPercentage: interruptedSession.completionPercentage,
     };
 
-    // Remove da lista de interrompidas e cria sessão ativa
     setInterrupted(prev => prev.filter(s => s.id !== interruptedSessionId));
     setSession(resumedSession);
   }, [interrupted]);
 
   const resetWeeklyProgress = useCallback(() => {
-    // Limpa histórico e sessões interrompidas
     setHistory([]);
     setInterrupted([]);
-    // Mantém a sessão ativa se existir
   }, []);
 
   const value = useMemo(
@@ -212,9 +208,10 @@ export function SessionProvider({
       endSession,
       interruptSession,
       resumeSession,
+      updateSessionProgress,
       resetWeeklyProgress,
     }),
-    [session, history, interrupted, startSession, endSession, interruptSession, resumeSession, resetWeeklyProgress]
+    [session, history, interrupted, startSession, endSession, interruptSession, resumeSession, updateSessionProgress, resetWeeklyProgress]
   );
 
   return (
@@ -231,9 +228,7 @@ export function SessionProvider({
 export function useSession() {
   const ctx = useContext(SessionContext);
   if (!ctx) {
-    throw new Error(
-      "useSession must be used inside SessionProvider"
-    );
+    throw new Error("useSession must be used inside SessionProvider");
   }
   return ctx;
 }
