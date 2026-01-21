@@ -184,24 +184,24 @@ export default function ProgressPage() {
 
   /* ------------------ UI ------------------ */
   return (
-    <main className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
+      <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-10">
         <header>
-          <h1 className="text-2xl font-medium">
+          <h1 className="text-xl sm:text-2xl font-medium">
             Progresso
           </h1>
-          <p className="text-sm text-neutral-400">
+          <p className="text-xs sm:text-sm text-neutral-400">
             Revisão semanal do seu desempenho
           </p>
         </header>
 
         {/* Week summary */}
-        <section className="rounded-2xl border border-neutral-800 p-6">
+        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
             Esta semana
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
             <Stat label="Sessões" value={totalSessions} />
             <Stat
               label="Tempo de foco"
@@ -225,7 +225,7 @@ export default function ProgressPage() {
         </section>
 
         {/* Patterns */}
-        <section className="rounded-2xl border border-neutral-800 p-6">
+        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500 mb-3">
             Padrões identificados
           </h2>
@@ -234,9 +234,9 @@ export default function ProgressPage() {
             {patterns.map((p, i) => (
               <li
                 key={i}
-                className="text-sm text-neutral-300 flex gap-2"
+                className="text-xs sm:text-sm text-neutral-300 flex gap-2"
               >
-                <span>•</span>
+                <span className="shrink-0">•</span>
                 <span>{p}</span>
               </li>
             ))}
@@ -244,7 +244,7 @@ export default function ProgressPage() {
         </section>
 
         {/* Alignment */}
-        <section className="space-y-3">
+        <section className="space-y-2 sm:space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Revisão de alinhamento
           </h2>
@@ -252,14 +252,14 @@ export default function ProgressPage() {
           {alignment.map(item => (
             <div
               key={item.area}
-              className="rounded-2xl border border-neutral-800 p-5"
+              className="rounded-2xl border border-neutral-800 p-4 sm:p-5"
             >
-              <div className="flex justify-between">
-                <p className="font-medium">
+              <div className="flex justify-between gap-2">
+                <p className="font-medium text-sm sm:text-base">
                   {item.area}
                 </p>
                 <span
-                  className={`text-xs uppercase ${
+                  className={`text-xs uppercase shrink-0 font-medium ${
                     item.status === "bom"
                       ? "text-green-400"
                       : item.status === "aviso"
@@ -270,7 +270,7 @@ export default function ProgressPage() {
                   {item.status.replace("-", " ")}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-neutral-400">
+              <p className="mt-2 text-xs sm:text-sm text-neutral-400">
                 {item.note}
               </p>
             </div>
@@ -291,8 +291,8 @@ function Stat({
 }) {
   return (
     <div>
-      <p className="text-neutral-500">{label}</p>
-      <p className="text-lg font-medium">{value}</p>
+      <p className="text-xs sm:text-sm text-neutral-500">{label}</p>
+      <p className="text-base sm:text-lg font-medium mt-1">{value}</p>
     </div>
   );
 }

@@ -68,12 +68,12 @@ export default function DashboardPage() {
   }, [history, mounted, activities, updateActivity]);
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pb-20">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
+      <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-10">
         {/* Header */}
         <header>
-          <h1 className="text-2xl font-medium">Dashboard</h1>
-          <p className="text-sm text-neutral-400">Decida o que fazer agora</p>
+          <h1 className="text-xl sm:text-2xl font-medium">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-neutral-400">Decida o que fazer agora</p>
         </header>
 
         
@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
         {/* Interrupted sessions */}
         {mounted && interrupted.length > 0 && (
-          <section className="space-y-4">
+          <section className="space-y-3 sm:space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-neutral-500">
               Sessões interrompidas
             </h2>
@@ -105,17 +105,17 @@ export default function DashboardPage() {
             {interrupted.map(item => (
               <div
                 key={item.id}
-                className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 space-y-2"
+                className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-3 sm:p-4 space-y-3"
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium text-yellow-200">{item.actionTitle}</p>
-                    <p className="text-xs text-neutral-400">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-yellow-200 text-sm sm:text-base truncate">{item.actionTitle}</p>
+                    <p className="text-xs text-neutral-400 mt-1">
                       Interrompida em {new Date(item.interruptedAt).toLocaleDateString()} às {new Date(item.interruptedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-yellow-400">{item.completionPercentage}%</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-base sm:text-lg font-bold text-yellow-400">{item.completionPercentage}%</p>
                     <p className="text-xs text-neutral-500">completo</p>
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
                     router.push("/session");
                   }}
                   disabled={!!session}
-                  className="w-full rounded-xl border border-yellow-500/40 py-2 text-sm text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition disabled:opacity-50"
+                  className="w-full rounded-xl border border-yellow-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition disabled:opacity-50 font-medium"
                 >
                   Continuar
                 </button>
@@ -142,21 +142,21 @@ export default function DashboardPage() {
 
         {/* Next Right Action */}
         {mounted && nextAction && (
-          <section className="rounded-2xl border border-neutral-700 p-6 space-y-4">
+          <section className="rounded-2xl border border-neutral-700 p-4 sm:p-6 space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-neutral-400">
               Atividade recomendada
             </h2>
 
-            <p className="text-lg font-medium">{nextAction.title}</p>
+            <p className="text-base sm:text-lg font-medium">{nextAction.title}</p>
 
-            <p className="text-sm text-neutral-500">
+            <p className="text-xs sm:text-sm text-neutral-500">
               Tempo estimado: {nextAction.estimatedTime} min
             </p>
 
             <button
               onClick={() => handleStart(nextAction.id, nextAction.title)}
               disabled={!!session}
-              className="rounded-xl border border-white/20 px-4 py-2 text-sm hover:border-white/40 transition disabled:opacity-50"
+              className="w-full rounded-xl border border-white/20 px-4 py-2.5 sm:py-2 text-sm sm:text-base hover:border-white/40 transition disabled:opacity-50 font-medium"
             >
               Iniciar sessão de foco
             </button>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
 
         {/* Other good options */}
         {mounted && otherActions.length > 0 && (
-          <section className="space-y-4">
+          <section className="space-y-3 sm:space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-neutral-500">
               Outras boas opções
             </h2>
@@ -175,10 +175,10 @@ export default function DashboardPage() {
             {otherActions.map(action => (
               <div
                 key={action.id}
-                className="rounded-xl border border-neutral-800 p-4 flex items-center justify-between"
+                className="rounded-xl border border-neutral-800 p-3 sm:p-4 flex items-center justify-between gap-3"
               >
-                <div>
-                  <p className="font-medium">{action.title}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm sm:text-base truncate">{action.title}</p>
                   <p className="text-xs text-neutral-500">
                     {action.estimatedTime} min · {action.energyRequired} energia
                   </p>
@@ -187,9 +187,9 @@ export default function DashboardPage() {
                 <button
                   onClick={() => handleStart(action.id, action.title)}
                   disabled={!!session}
-                  className="text-xs text-neutral-400 hover:text-white transition disabled:opacity-50"
+                  className="text-xs sm:text-sm text-neutral-400 hover:text-white transition disabled:opacity-50 whitespace-nowrap font-medium px-2 sm:px-3 py-1.5 rounded hover:bg-neutral-900"
                 >
-                  Iniciar atividade
+                  Iniciar
                 </button>
               </div>
             ))}

@@ -50,17 +50,17 @@ export default function SessionPage() {
   if (!session) return null;
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 flex items-center justify-center">
-      <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-6 space-y-6">
-        <h1 className="text-xl font-medium">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-6 flex items-center justify-center">
+      <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
+        <h1 className="text-lg sm:text-xl font-medium">
           Sessão de foco
         </h1>
 
-        <div className="space-y-1">
-          <p className="text-sm text-neutral-400">
+        <div className="space-y-2">
+          <p className="text-xs sm:text-sm text-neutral-400">
             Atividade atual
           </p>
-          <p className="text-lg font-medium">
+          <p className="text-base sm:text-lg font-medium break-words">
             {session.actionTitle}
           </p>
         </div>
@@ -73,9 +73,9 @@ export default function SessionPage() {
             />
           </div>
 
-          <div className="space-y-1">
-            <p className="text-sm text-neutral-400">Tempo</p>
-            <p className="text-lg font-medium">
+          <div className="space-y-2">
+            <p className="text-xs sm:text-sm text-neutral-400">Tempo</p>
+            <p className="text-base sm:text-lg font-medium">
               {Math.floor(elapsedMs / 60000)} min
             </p>
             <p className="text-xs text-neutral-500">
@@ -90,7 +90,7 @@ export default function SessionPage() {
               endSession();
               router.replace("/progress");
             }}
-            className="w-full rounded-xl border border-green-500/40 py-2 text-sm text-green-400 hover:border-green-500 hover:text-green-300 transition"
+            className="w-full rounded-xl border border-green-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-green-400 hover:border-green-500 hover:text-green-300 transition font-medium"
           >
             Concluir sessão
           </button>
@@ -100,7 +100,7 @@ export default function SessionPage() {
               interruptSession();
               router.replace("/");
             }}
-            className="w-full rounded-xl border border-yellow-500/40 py-2 text-sm text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition"
+            className="w-full rounded-xl border border-yellow-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition font-medium"
           >
             Interromper sessão
           </button>

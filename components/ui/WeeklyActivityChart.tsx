@@ -58,28 +58,28 @@ export function WeeklyActivityChart() {
   if (!mounted) return null;
 
   return (
-    <section className="rounded-2xl border border-neutral-800 p-6 bg-neutral-950">
+    <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 bg-neutral-950">
       <h2 className="text-xs uppercase tracking-widest text-neutral-500">
         Últimos 7 dias
       </h2>
 
-      <div className="mt-4 flex items-end gap-4 h-32">
+      <div className="mt-4 flex items-end gap-2 sm:gap-4 h-24 sm:h-32">
         {data.map((d, i) => {
           const height = (d.count / maxCount) * 100;
 
           return (
             <div
               key={`day-${i}`}
-              className="flex flex-col items-center gap-2 w-10"
+              className="flex flex-col items-center gap-1.5 sm:gap-2 flex-1 min-w-0"
             >
-              <div className="relative w-3 h-full flex items-end">
+              <div className="relative h-full flex items-end w-full">
                 <div
-                  className="w-full rounded-full bg-white/80 transition-all duration-300"
-                  style={{ height: `${height}%` }}
+                  className="rounded-full bg-white/80 transition-all duration-300 mx-auto"
+                  style={{ height: `${height || 5}%`, width: '60%' }}
                 />
               </div>
 
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-[10px] sm:text-[11px] text-neutral-400 truncate">
                 {d.label}
               </span>
             </div>

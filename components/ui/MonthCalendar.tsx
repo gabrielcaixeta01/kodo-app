@@ -47,16 +47,16 @@ export function MonthCalendar() {
   const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
   return (
-    <section className="rounded-2xl bg-neutral-950 border items-center justify-center border-neutral-800 p-6 ">
+    <section className="rounded-2xl bg-neutral-950 border border-neutral-800 p-4 sm:p-6">
       <div className="flex items-center justify-center">
         <h2 className="text-xs uppercase tracking-widest text-neutral-500">
           {monthLabel}
         </h2>
       </div>
 
-      <div className="mt-4 grid grid-cols-7 gap-2 text-center">
+      <div className="mt-4 grid grid-cols-7 gap-1 sm:gap-2 text-center">
         {weekDays.map((d, i) => (
-          <div key={`${d}-${i}`} className="h-10 w-10 flex items-center justify-center text-[11px] text-neutral-500">
+          <div key={`${d}-${i}`} className="h-8 sm:h-10 w-8 sm:w-10 flex items-center justify-center text-[10px] sm:text-[11px] text-neutral-500 font-medium">
             {d}
           </div>
         ))}
@@ -64,7 +64,7 @@ export function MonthCalendar() {
         {Array.from({ length: totalCells }, (_, idx) => {
           const day = idx - mondayIndex + 1;
           if (day < 1 || day > daysInMonth) {
-            return <div key={`empty-${idx}`} className="h-10 w-10" />;
+            return <div key={`empty-${idx}`} className="h-8 sm:h-10 w-8 sm:w-10" />;
           }
 
           const count = countsByDay[day] || 0;
@@ -73,19 +73,19 @@ export function MonthCalendar() {
           return (
             <div
               key={`day-${day}`}
-              className={`h-10 rounded-full p-1 w-10 flex flex-col items-center justify-center
-                ${isToday ? "border border-white/30" : ""}`}
+              className={`h-8 sm:h-10 rounded-full p-1 w-8 sm:w-10 flex flex-col items-center justify-center transition
+                ${isToday ? "border border-white/30 bg-neutral-800/50" : ""}`}
             >
-              <span className={isToday ? "text-white" : "text-neutral-200"}>
+              <span className={`text-xs sm:text-sm ${isToday ? "text-white font-medium" : "text-neutral-200"}`}>
                 {day}
               </span>
 
               {count > 0 && (
-                <div className="mt-1 flex gap-1">
+                <div className="mt-0.5 sm:mt-1 flex gap-0.5 sm:gap-1">
                   {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
                     <span
                       key={`dot-${day}-${i}`}
-                      className="h-1 w-1 rounded-full bg-red-400"
+                      className="h-0.5 sm:h-1 w-0.5 sm:w-1 rounded-full bg-red-400"
                     />
                   ))}
                 </div>

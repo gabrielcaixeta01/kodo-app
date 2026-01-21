@@ -1,11 +1,23 @@
 @import "tailwindcss";
 
+* {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+input, textarea, select {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 html {
   background-color: black;
   overflow-y: scroll;
   overflow-x: hidden;
   overscroll-behavior: none;
   touch-action: pan-y;
+  font-size: 16px;
 }
 
 body {
@@ -13,6 +25,18 @@ body {
   overflow-x: hidden;
   overscroll-behavior: none;
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+  
+  body {
+    font-size: 14px;
+  }
 }
 
 @keyframes slideUp {
@@ -23,5 +47,23 @@ body {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* Melhorias de toque em mobile */
+input:focus {
+  outline: none;
+  border-color: rgb(115, 115, 115);
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Viewport safe area support */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
   }
 }

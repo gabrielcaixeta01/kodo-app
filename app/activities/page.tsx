@@ -71,13 +71,13 @@ export default function ActivitiesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pb-20">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
+      <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-10">
         <header>
-          <h1 className="text-2xl font-medium">
+          <h1 className="text-xl sm:text-2xl font-medium">
             Atividades
           </h1>
-          <p className="text-sm text-neutral-400">
+          <p className="text-xs sm:text-sm text-neutral-400">
             Gerencie suas atividades para alcançar seus objetivos
           </p>
         </header>
@@ -96,7 +96,7 @@ export default function ActivitiesPage() {
         />
 
         {/* Activities list */}
-        <section className="space-y-3">
+        <section className="space-y-2.5 sm:space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Atividades
           </h2>
@@ -142,7 +142,7 @@ export default function ActivitiesPage() {
         </section>
 
         {/* Completed activities */}
-        <section className="space-y-3">
+        <section className="space-y-2.5 sm:space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Concluídas
           </h2>

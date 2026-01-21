@@ -62,7 +62,7 @@ export function CircularProgress({
 
       <div className="absolute inset-0 flex items-center justify-center rotate-[0deg]">
         <div className="text-center">
-          <div className="text-2xl font-medium text-white">{Math.round(clamped)}%</div>
+          <div className="text-xl sm:text-2xl font-medium text-white">{Math.round(clamped)}%</div>
           {label && (
             <div className="text-xs text-neutral-400 mt-1">{label}</div>
           )}

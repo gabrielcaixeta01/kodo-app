@@ -61,25 +61,26 @@ export function ActivityActionsPopup({
         onClick={e => e.stopPropagation()}
         className={`
           relative w-[90%] max-w-md rounded-2xl
-          border border-neutral-700 bg-neutral-900 p-6
+          border border-neutral-700 bg-neutral-900 p-4 sm:p-6
           transition-all duration-300
           ease-[cubic-bezier(0.16,1,0.3,1)]
+          max-h-[90vh] overflow-y-auto
           ${isOpen
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-6 scale-95"}
         `}
       >
-        <h2 className="text-lg font-medium text-white mb-4">
+        <h2 className="text-base sm:text-lg font-medium text-white mb-4">
           Editar atividade
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           {/* Título */}
           <input
             value={title}
             onChange={e => setTitle(e.target.value)}
             className="w-full rounded-xl bg-black border border-neutral-700
-                       px-4 py-3 text-sm focus:outline-none
+                       px-4 py-3 text-sm sm:text-base focus:outline-none
                        focus:border-neutral-500 transition"
           />
 
@@ -90,7 +91,7 @@ export function ActivityActionsPopup({
                 key={d}
                 type="button"
                 onClick={() => setDifficulty(d)}
-                className={`flex-1 rounded-xl px-4 py-2.5 border text-sm transition
+                className={`flex-1 rounded-xl px-3 sm:px-4 py-2.5 border text-xs sm:text-sm transition font-medium
                   ${
                     difficulty === d
                       ? "bg-neutral-800 border-neutral-500 text-white"
@@ -109,7 +110,7 @@ export function ActivityActionsPopup({
                 key={p}
                 type="button"
                 onClick={() => setPriority(p)}
-                className={`flex-1 rounded-xl px-4 py-2.5 border text-sm transition
+                className={`flex-1 rounded-xl px-3 sm:px-4 py-2.5 border text-xs sm:text-sm transition font-medium
                   ${
                     priority === p
                       ? "bg-neutral-800 border-neutral-500 text-white"
@@ -127,14 +128,14 @@ export function ActivityActionsPopup({
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
             className="w-full rounded-xl bg-black border border-neutral-700
-                       px-4 py-3 text-sm focus:outline-none
+                       px-4 py-3 text-sm sm:text-base focus:outline-none
                        focus:border-neutral-500 transition"
           />
 
           <button
             type="submit"
             className="w-full py-3 rounded-xl bg-white text-black
-                       text-sm font-medium hover:opacity-90 transition"
+                       text-sm sm:text-base font-medium hover:opacity-90 transition"
           >
             Salvar
           </button>

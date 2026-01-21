@@ -128,16 +128,16 @@ export function ActivityCard({
               : "transform 0.3s ease-out, opacity 0.3s ease-out",
           opacity: isDeleting ? 0 : 1,
         }}
-        className={`relative z-10 rounded-xl border p-4 bg-black cursor-pointer ${statusColors[activity.status]}`}
+        className={`relative z-10 rounded-xl border p-3 sm:p-4 bg-black cursor-pointer ${statusColors[activity.status]}`}
       >
-        <div className="flex justify-between">
-          <p className="font-medium">{activity.title}</p>
-          <span className="text-xs text-neutral-400">
+        <div className="flex justify-between gap-2 items-start">
+          <p className="font-medium text-sm sm:text-base flex-1 break-words">{activity.title}</p>
+          <span className="text-xs text-neutral-400 shrink-0 whitespace-nowrap">
             {statusLabels[activity.status]}
           </span>
         </div>
 
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 mt-2">
           Prioridade: {activity.priority} · Dificuldade: {activity.difficulty}
           {activity.dueDate && (
             <> · Prazo {new Date(activity.dueDate).toLocaleDateString()}</>

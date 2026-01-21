@@ -20,26 +20,26 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pb-16">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-16">
+      <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-10">
         {/* Header */}
         <header className="space-y-1">
-          <h1 className="text-2xl font-medium">Configurações</h1>
-          <p className="text-sm text-neutral-400">
+          <h1 className="text-xl sm:text-2xl font-medium">Configurações</h1>
+          <p className="text-xs sm:text-sm text-neutral-400">
             Controle como o KODO funciona para você
           </p>
         </header>
 
         {/* Daily Context */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-6">
+        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Contexto diário
           </h2>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             {/* Energy */}
-            <div className="space-y-2">
-              <p className="text-sm text-neutral-400">
+            <div className="space-y-3">
+              <p className="text-xs sm:text-sm text-neutral-400">
                 Nível de energia padrão
               </p>
 
@@ -71,17 +71,17 @@ export default function SettingsPage() {
         </section>
 
         {/* System */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-6">
+        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Sistema
           </h2>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm text-neutral-400">Resetar o progresso semanal</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Resetar o progresso semanal</p>
               <button 
                 onClick={handleResetProgress}
-                className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition"
+                className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-xs sm:text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition font-medium"
               >
                 Resetar
               </button>

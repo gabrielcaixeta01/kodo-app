@@ -29,10 +29,10 @@ export function DailyTimeSlider({ value, onChange }: DailyTimeSliderProps) {
   const progress = ((displayValue - 15) / (480 - 15)) * 100;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-neutral-400">Tempo disponível por dia</p>
-        <span className="text-lg font-medium text-white">{formatTime(displayValue)}</span>
+    <div className="space-y-3 sm:space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs sm:text-sm text-neutral-400">Tempo disponível por dia</p>
+        <span className="text-base sm:text-lg font-medium text-white whitespace-nowrap">{formatTime(displayValue)}</span>
       </div>
 
       <style jsx>{`
@@ -58,8 +58,8 @@ export function DailyTimeSlider({ value, onChange }: DailyTimeSliderProps) {
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: white;
           cursor: pointer;
@@ -72,9 +72,13 @@ export function DailyTimeSlider({ value, onChange }: DailyTimeSliderProps) {
           transform: scale(1.1);
         }
 
+        input[type="range"]::-webkit-slider-thumb:active {
+          transform: scale(1.15);
+        }
+
         input[type="range"]::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: white;
           cursor: pointer;
@@ -86,6 +90,10 @@ export function DailyTimeSlider({ value, onChange }: DailyTimeSliderProps) {
         input[type="range"]::-moz-range-thumb:hover {
           box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
           transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+          transform: scale(1.15);
         }
 
         input[type="range"]::-moz-range-track {
