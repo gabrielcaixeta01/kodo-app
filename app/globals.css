@@ -15,7 +15,8 @@ html {
   background-color: black;
   overflow-y: scroll;
   overflow-x: hidden;
-  overscroll-behavior: none;
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
   touch-action: pan-y;
   font-size: 16px;
 }
@@ -23,7 +24,6 @@ html {
 body {
   background-color: black;
   overflow-x: hidden;
-  overscroll-behavior: none;
   position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
