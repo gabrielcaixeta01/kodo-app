@@ -34,9 +34,6 @@ export default function DashboardPage() {
   const nextAction = rankedActions[0];
   const otherActions = rankedActions.slice(1);
 
-  // Atividades concluídas
-  const completedActivities = mounted ? activities.filter(a => a.status === "completed") : [];
-
   function handleStart(activityId: string, title: string) {
     // Marca atividade como in_progress
     updateActivity(activityId, { status: "in_progress" });
@@ -194,32 +191,6 @@ export default function DashboardPage() {
                 >
                   Iniciar atividade
                 </button>
-              </div>
-            ))}
-          </section>
-        )}
-
-        {/* Completed activities */}
-        {mounted && completedActivities.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-              Atividades concluídas
-            </h2>
-
-            {completedActivities.map(activity => (
-              <div
-                key={activity.id}
-                className="rounded-xl border border-green-500/30 bg-green-500/5 p-4 flex items-center justify-between"
-              >
-                <div>
-                  <p className="font-medium text-green-200">{activity.title}</p>
-                  <p className="text-xs text-neutral-400">
-                    Criada em {new Date(activity.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-green-400 text-xs">
-                  ✓ Concluída
-                </div>
               </div>
             ))}
           </section>

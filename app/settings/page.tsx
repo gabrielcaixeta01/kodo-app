@@ -1,13 +1,15 @@
 // app/settings/page.tsx
 
+"use client";
+
+import { useState } from "react";
+import { DailyTimeSlider } from "@/components/ui/DailyTimeSlider";
+
 type EnergyLevel = "baixa" | "média" | "alta";
 
 export default function SettingsPage() {
-  // mocks (depois vêm do storage)
-  const energy: EnergyLevel = "média";
-  const dailyTime = 120; // minutes
-  const focusMode = true;
-  const localOnly = true;
+  const [energy, setEnergy] = useState<EnergyLevel>("média");
+  const [dailyTime, setDailyTime] = useState(120); // minutes
 
   return (
     <main className="min-h-screen bg-black text-white p-6 pb-16">
@@ -37,10 +39,11 @@ export default function SettingsPage() {
                 {(["baixa", "média", "alta"] as EnergyLevel[]).map(e => (
                   <button
                     key={e}
+                    onClick={() => setEnergy(e)}
                     className={`px-4 py-1.5 rounded-full border text-xs uppercase tracking-widest transition ${
                       energy === e
-                        ? "border-white text-white"
-                        : "border-neutral-700 text-neutral-500 hover:border-neutral-500"
+                        ? "border-white text-white bg-white/5"
+                        : "border-neutral-700 text-neutral-500 hover:border-neutral-600 hover:text-neutral-400"
                     }`}
                   >
                     {e}
@@ -51,61 +54,11 @@ export default function SettingsPage() {
 
             {/* Time */}
             <div className="space-y-2">
-              <p className="text-sm text-neutral-400">
-                Tempo disponível por dia
-              </p>
-              <p className="text-lg font-medium">
-                {dailyTime} min
-              </p>
+              <DailyTimeSlider 
+                value={dailyTime} 
+                onChange={setDailyTime}
+              />
             </div>
-          </div>
-        </section>
-
-        {/* Decision Behavior */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
-          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Comportamento de decisão
-          </h2>
-
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="font-medium">Modo foco</p>
-              <p className="text-sm text-neutral-400">
-                Sugere apenas uma ação por vez
-              </p>
-            </div>
-
-            <span
-              className={`text-xs uppercase tracking-widest ${
-                focusMode ? "text-green-400" : "text-neutral-500"
-              }`}
-            >
-              {focusMode ? "Ativado" : "Desativado"}
-            </span>
-          </div>
-        </section>
-
-        {/* Privacy */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
-          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Privacidade
-          </h2>
-
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="font-medium">Dados locais</p>
-              <p className="text-sm text-neutral-400">
-                Seus dados nunca saem deste dispositivo
-              </p>
-            </div>
-
-            <span
-              className={`text-xs uppercase tracking-widest ${
-                localOnly ? "text-green-400" : "text-neutral-500"
-              }`}
-            >
-              {localOnly ? "Ativado" : "Desativado"}
-            </span>
           </div>
         </section>
 
@@ -115,14 +68,19 @@ export default function SettingsPage() {
             Sistema
           </h2>
 
-          <div className="grid gap-5 p-2 md:grid-cols-2">
-            <button className="rounded-xl border border-neutral-700 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-500 transition">
-              Resetar aprendizado de decisão
-            </button>
-
-            <button className="rounded-xl border border-red-500/40 py-2.5 text-sm text-red-400 hover:border-red-500 hover:text-red-300 transition">
-              Apagar todos os dados locais
-            </button>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-sm text-neutral-400">Resetar o progresso semanal</p>
+              <button className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition">
+                Resetar
+              </button>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-neutral-400">Apagar todos os dados locais</p>
+              <button className="w-full rounded-lg border border-red-500/30 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:border-red-500/50 hover:bg-red-950/20 transition">
+                Apagar
+              </button>
+            </div>
           </div>
         </section>
       </div>

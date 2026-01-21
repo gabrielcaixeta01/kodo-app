@@ -18,7 +18,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-black text-white select-none">
+      <body className="bg-black text-white select-none" style={{ touchAction: 'pan-y' }}>
         <ActivityProvider>
           <SessionProvider>
             {children}

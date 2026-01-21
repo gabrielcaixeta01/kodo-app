@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
-html,
+html {
+  background-color: black;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-y;
+}
+
 body {
   background-color: black;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  position: relative;
 }
 
 @keyframes slideUp {
