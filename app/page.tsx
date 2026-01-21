@@ -91,7 +91,7 @@ export default function DashboardPage() {
         {/* Empty state */}
         {mounted && rankedActions.length === 0 && interrupted.length === 0 && (
           <p className="text-sm text-neutral-500">
-            Nenhuma atividade disponível. Adicione atividades em Estudos.
+            Nenhuma atividade. Crie uma nova em &quot;Atividades&quot;.
           </p>
         )}
 
