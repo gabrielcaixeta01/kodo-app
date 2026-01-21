@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "@/contexts/SessionContext";
+import { CircularProgress } from "@/components/ui/CircularProgress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,7 +9,8 @@ export default function SessionPage() {
   const { session, endSession, interruptSession } = useSession();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [elapsedMinutes, setElapsedMinutes] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const expectedMinutes = 60; // duração alvo da sessão
 
   // Redireciona se não houver sessão (após montagem)
   useEffect(() => {
@@ -28,18 +30,18 @@ export default function SessionPage() {
     }
   }, [mounted, session, router]);
 
-  // controla o tempo
+  // controla o tempo (atualiza a cada segundo para progresso suave)
   useEffect(() => {
     if (!mounted || !session) return;
 
     function updateTime() {
       if (!session) return;
       const diff = Date.now() - session.startedAt;
-      setElapsedMinutes(Math.floor(diff / 60000));
+      setElapsedMs(diff);
     }
 
     updateTime();
-    const interval = setInterval(updateTime, 60000);
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, [mounted, session]);
 
@@ -63,9 +65,24 @@ export default function SessionPage() {
           </p>
         </div>
 
-        <p className="text-sm text-neutral-500">
-          Tempo decorrido: {elapsedMinutes} min
-        </p>
+        <div className="grid gap-4 md:grid-cols-2 items-center">
+          <div className="flex items-center justify-center py-2">
+            <CircularProgress
+              value={Math.min(100, (elapsedMs / (expectedMinutes * 60000)) * 100)}
+              label={`meta: ${expectedMinutes} min`}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-sm text-neutral-400">Tempo</p>
+            <p className="text-lg font-medium">
+              {Math.floor(elapsedMs / 60000)} min
+            </p>
+            <p className="text-xs text-neutral-500">
+              {Math.floor((elapsedMs % 60000) / 1000)}s
+            </p>
+          </div>
+        </div>
 
         <div className="space-y-3">
           <button

@@ -12,7 +12,7 @@ import { useSwipeDelete } from "@/hooks/useSwipeDelete";
 import { dateStringToTimestamp } from "@/lib/dateUtils";
 
 
-export default function StudiesPage() {
+export default function ActivitiesPage() {
   const { activities, addActivity, updateActivity, deleteActivity } =
     useActivities();
 

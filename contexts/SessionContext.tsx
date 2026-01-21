@@ -46,6 +46,7 @@ type SessionContextType = {
   endSession: () => void;
   interruptSession: () => void;
   resumeSession: (interruptedSessionId: string) => void;
+  resetWeeklyProgress: () => void;
 };
 
 /* =====================
@@ -195,6 +196,13 @@ export function SessionProvider({
     setSession(resumedSession);
   }, [interrupted]);
 
+  const resetWeeklyProgress = useCallback(() => {
+    // Limpa histórico e sessões interrompidas
+    setHistory([]);
+    setInterrupted([]);
+    // Mantém a sessão ativa se existir
+  }, []);
+
   const value = useMemo(
     () => ({
       session,
@@ -204,8 +212,9 @@ export function SessionProvider({
       endSession,
       interruptSession,
       resumeSession,
+      resetWeeklyProgress,
     }),
-    [session, history, interrupted, startSession, endSession, interruptSession, resumeSession]
+    [session, history, interrupted, startSession, endSession, interruptSession, resumeSession, resetWeeklyProgress]
   );
 
   return (

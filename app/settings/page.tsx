@@ -4,12 +4,20 @@
 
 import { useState } from "react";
 import { DailyTimeSlider } from "@/components/ui/DailyTimeSlider";
+import { useSession } from "@/contexts/SessionContext";
 
 type EnergyLevel = "baixa" | "média" | "alta";
 
 export default function SettingsPage() {
+  const { resetWeeklyProgress } = useSession();
   const [energy, setEnergy] = useState<EnergyLevel>("média");
   const [dailyTime, setDailyTime] = useState(120); // minutes
+
+  const handleResetProgress = () => {
+    if (confirm("Tem certeza que deseja resetar o progresso semanal? Esta ação não pode ser desfeita.")) {
+      resetWeeklyProgress();
+    }
+  };
 
   return (
     <main className="min-h-screen bg-black text-white p-6 pb-16">
@@ -63,7 +71,7 @@ export default function SettingsPage() {
         </section>
 
         {/* System */}
-        <section className="rounded-2xl border border-neutral-800 p-6 space-y-4">
+        <section className="rounded-2xl border border-neutral-800 p-6 space-y-6">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
             Sistema
           </h2>
@@ -71,16 +79,14 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm text-neutral-400">Resetar o progresso semanal</p>
-              <button className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition">
+              <button 
+                onClick={handleResetProgress}
+                className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition"
+              >
                 Resetar
               </button>
             </div>
-            <div className="space-y-2">
-              <p className="text-sm text-neutral-400">Apagar todos os dados locais</p>
-              <button className="w-full rounded-lg border border-red-500/30 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:border-red-500/50 hover:bg-red-950/20 transition">
-                Apagar
-              </button>
-            </div>
+            
           </div>
         </section>
       </div>
