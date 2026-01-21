@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useActivities } from "@/contexts/ActivityContext";
+import { useActivities } from "@/hooks/useActivities";
+import { Activity } from "@/types/activity"; // Importa o tipo correto
 
 type DayData = {
   label: string;
   count: number;
 };
 
-function getLast7DaysActivity(
-  activities: { createdAt: number }[]
-): DayData[] {
+function getLast7DaysActivity(activities: Activity[]): DayData[] {
   const result: DayData[] = [];
   const today = new Date();
 
@@ -23,6 +22,7 @@ function getLast7DaysActivity(
     nextDate.setDate(date.getDate() + 1);
 
     const count = activities.filter(a => {
+      if (!a.createdAt) return false; // Garante que existe created_at
       const d = new Date(a.createdAt);
       return d >= date && d < nextDate;
     }).length;

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Activity, Difficulty, Priority } from "@/types/activity";
-import { useActivities } from "@/contexts/ActivityContext";
-import { dateStringToTimestamp, timestampToDateString } from "@/lib/dateUtils";
+import { useActivities } from "@/hooks/useActivities";
 
 interface Props {
   activity: Activity;
@@ -18,12 +17,11 @@ export function ActivityActionsPopup({
 }: Props) {
   const { updateActivity } = useActivities();
 
-  // 🔹 estado inicial vem direto da activity
   const [title, setTitle] = useState(activity.title);
   const [difficulty, setDifficulty] = useState<Difficulty>(activity.difficulty);
   const [priority, setPriority] = useState<Priority>(activity.priority);
   const [dueDate, setDueDate] = useState(
-    activity.dueDate ? timestampToDateString(activity.dueDate) : ""
+    activity.dueDate ? new Date(activity.dueDate).toISOString().split('T')[0] : ""
   );
 
   if (!isOpen) return null;
@@ -36,7 +34,7 @@ export function ActivityActionsPopup({
       title: title.trim(),
       difficulty,
       priority,
-      dueDate: dueDate ? dateStringToTimestamp(dueDate) : undefined,
+      dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
     });
 
     onClose();
@@ -82,63 +80,80 @@ export function ActivityActionsPopup({
             className="w-full rounded-xl bg-black border border-neutral-700
                        px-4 py-3 text-sm sm:text-base focus:outline-none
                        focus:border-neutral-500 transition"
+            placeholder="Título da atividade"
           />
 
           {/* Dificuldade */}
-          <div className="flex gap-2">
-            {(["baixa", "média", "alta"] as Difficulty[]).map(d => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDifficulty(d)}
-                className={`flex-1 rounded-xl px-3 sm:px-4 py-2.5 border text-xs sm:text-sm transition font-medium
-                  ${
-                    difficulty === d
-                      ? "bg-neutral-800 border-neutral-500 text-white"
-                      : "bg-black border-neutral-700 text-neutral-400 hover:border-neutral-500"
-                  }`}
-              >
-                {d}
-              </button>
-            ))}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-neutral-300 mb-2">
+              Dificuldade
+            </label>
+            <select
+              value={difficulty}
+              onChange={e => setDifficulty(e.target.value as Difficulty)}
+              className="w-full rounded-xl bg-black border border-neutral-700
+                         px-4 py-3 text-sm sm:text-base focus:outline-none
+                         focus:border-neutral-500 transition text-white"
+            >
+              <option value="baixa">Baixa</option>
+              <option value="média">Média</option>
+              <option value="alta">Alta</option>
+            </select>
           </div>
 
           {/* Prioridade */}
-          <div className="flex gap-2">
-            {(["baixa", "média", "alta"] as Priority[]).map(p => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPriority(p)}
-                className={`flex-1 rounded-xl px-3 sm:px-4 py-2.5 border text-xs sm:text-sm transition font-medium
-                  ${
-                    priority === p
-                      ? "bg-neutral-800 border-neutral-500 text-white"
-                      : "bg-black border-neutral-700 text-neutral-400 hover:border-neutral-500"
-                  }`}
-              >
-                {p}
-              </button>
-            ))}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-neutral-300 mb-2">
+              Prioridade
+            </label>
+            <select
+              value={priority}
+              onChange={e => setPriority(e.target.value as Priority)}
+              className="w-full rounded-xl bg-black border border-neutral-700
+                         px-4 py-3 text-sm sm:text-base focus:outline-none
+                         focus:border-neutral-500 transition text-white"
+            >
+              <option value="baixa">Baixa</option>
+              <option value="média">Média</option>
+              <option value="alta">Alta</option>
+            </select>
           </div>
 
-          {/* Prazo */}
-          <input
-            type="date"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
-            className="w-full rounded-xl bg-black border border-neutral-700
-                       px-4 py-3 text-sm sm:text-base focus:outline-none
-                       focus:border-neutral-500 transition"
-          />
+          {/* Data de vencimento */}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-neutral-300 mb-2">
+              Data de vencimento
+            </label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              className="w-full rounded-xl bg-black border border-neutral-700
+                         px-4 py-3 text-sm sm:text-base focus:outline-none
+                         focus:border-neutral-500 transition"
+            />
+          </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 rounded-xl bg-white text-black
-                       text-sm sm:text-base font-medium hover:opacity-90 transition"
-          >
-            Salvar
-          </button>
+          {/* Botões */}
+          <div className="flex gap-2 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5
+                         text-sm font-medium text-neutral-300 hover:bg-neutral-900/50
+                         transition"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="flex-1 rounded-xl bg-white px-4 py-2.5
+                         text-sm font-medium text-black hover:bg-neutral-200
+                         transition"
+            >
+              Salvar
+            </button>
+          </div>
         </form>
       </div>
     </div>

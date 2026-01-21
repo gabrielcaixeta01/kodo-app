@@ -61,7 +61,6 @@ export default function ActivitiesPage() {
       difficulty,
       priority,
       dueDate: dueDate ? dateStringToTimestamp(dueDate) : undefined,
-      status: "pending",
     });
 
     setTitle("");

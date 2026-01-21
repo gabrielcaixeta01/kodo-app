@@ -1,99 +1,87 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { useActivities } from "@/contexts/ActivityContext";
+import { useActivities } from "@/hooks/useActivities";
 
 export function MonthCalendar() {
   const { activities } = useActivities();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const today = useMemo(() => new Date(), []);
+  const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth();
 
-  const monthLabel = new Date(year, month, 1).toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric",
-  });
-
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const firstDay = new Date(year, month, 1);
-  const jsWeekday = firstDay.getDay();
-  const mondayIndex = (jsWeekday + 6) % 7;
+  const activitiesByDate = activities.reduce(
+    (acc, activity) => {
+      if (activity.dueDate) {
+        const date = new Date(activity.dueDate).toDateString();
+        acc[date] = (acc[date] || 0) + 1;
+      }
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const countsByDay = useMemo(() => {
-    const map: Record<number, number> = {};
-    activities.forEach((a) => {
-      if (!a.dueDate) return;
-      // Como o timestamp já está em timezone local (via dateStringToTimestamp),
-      // não precisamos fazer correção de offset
-      const d = new Date(a.dueDate);
-      if (d.getFullYear() !== year || d.getMonth() !== month) return;
-      map[d.getDate()] = (map[d.getDate()] || 0) + 1;
-    });
-    return map;
-  }, [activities, year, month]);
-
-  // evita hydration mismatch
-  if (!mounted) return null;
-
-  const totalCells = Math.ceil((mondayIndex + daysInMonth) / 7) * 7;
-  const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+  const days = [];
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push(i);
+  }
 
   return (
-    <section className="rounded-2xl bg-neutral-950 border border-neutral-800 p-4 sm:p-6">
-      <div className="flex items-center justify-center">
-        <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-          {monthLabel}
-        </h2>
-      </div>
+    <div className="rounded-2xl border border-neutral-700 bg-neutral-900/50 p-4 sm:p-6">
+      <h3 className="text-sm font-medium text-neutral-300 mb-4">
+        {new Date(year, month).toLocaleDateString("pt-BR", {
+          month: "long",
+          year: "numeric",
+        })}
+      </h3>
 
-      <div className="mt-4 grid grid-cols-7 gap-1 sm:gap-2 text-center">
-        {weekDays.map((d, i) => (
-          <div key={`${d}-${i}`} className="h-8 sm:h-10 w-8 sm:w-10 flex items-center justify-center text-[10px] sm:text-[11px] text-neutral-500 font-medium">
-            {d}
+      <div className="grid grid-cols-7 gap-2">
+        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
+          <div key={day} className="text-center text-xs text-neutral-500 font-medium">
+            {day}
           </div>
         ))}
 
-        {Array.from({ length: totalCells }, (_, idx) => {
-          const day = idx - mondayIndex + 1;
-          if (day < 1 || day > daysInMonth) {
-            return <div key={`empty-${idx}`} className="h-8 sm:h-10 w-8 sm:w-10" />;
-          }
-
-          const count = countsByDay[day] || 0;
-          const isToday = day === today.getDate();
+        {days.map((day, idx) => {
+          const dateStr = day
+            ? new Date(year, month, day).toDateString()
+            : null;
+          const count = dateStr ? activitiesByDate[dateStr] || 0 : 0;
+          const isToday =
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
 
           return (
             <div
-              key={`day-${day}`}
-              className={`h-8 sm:h-10 rounded-full p-1 w-8 sm:w-10 flex flex-col items-center justify-center transition
-                ${isToday ? "border border-white/30 bg-neutral-800/50" : ""}`}
+              key={idx}
+              className={`
+                aspect-square flex items-center justify-center rounded-lg
+                text-xs sm:text-sm font-medium transition
+                ${!day ? "bg-transparent" : ""}
+                ${
+                  isToday
+                    ? "bg-white text-black"
+                    : count > 0
+                    ? "bg-neutral-700 text-white"
+                    : "bg-neutral-800 text-neutral-500"
+                }
+              `}
             >
-              <span className={`text-xs sm:text-sm ${isToday ? "text-white font-medium" : "text-neutral-200"}`}>
-                {day}
-              </span>
-
+              {day}
               {count > 0 && (
-                <div className="mt-0.5 sm:mt-1 flex gap-0.5 sm:gap-1">
-                  {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
-                    <span
-                      key={`dot-${day}-${i}`}
-                      className="h-0.5 sm:h-1 w-0.5 sm:w-1 rounded-full bg-red-400"
-                    />
-                  ))}
-                </div>
+                <span className="absolute bottom-1 text-xs opacity-70">
+                  •
+                </span>
               )}
             </div>
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }

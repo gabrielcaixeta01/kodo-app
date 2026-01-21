@@ -1,156 +1,97 @@
 "use client";
 
-import { useState } from "react";
 import { Activity } from "@/types/activity";
-import { useLongPress } from "@/hooks/useLongPress";
-import { ActivityActionsPopup } from "./ActivityActionsPopup";
+import { PlayIcon } from "@heroicons/react/24/solid";
 
-interface ActivityCardProps {
+interface Props {
   activity: Activity;
-  offset: number;
-  isDeleting: boolean;
-  isDragging: boolean;
-  canDelete: boolean;
-  onTouchStart: (e: React.TouchEvent) => void;
-  onTouchMove: (e: React.TouchEvent) => void;
-  onTouchEnd: () => void;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onMouseMove: (e: React.MouseEvent) => void;
-  onMouseUp: () => void;
-  onMouseLeave: () => void;
+  onStart: () => void;
+  isHighlighted?: boolean;
 }
 
-export function ActivityCard({
-  activity,
-  offset,
-  isDeleting,
-  isDragging,
-  canDelete,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
-  onMouseDown,
-  onMouseMove,
-  onMouseUp,
-  onMouseLeave,
-}: ActivityCardProps) {
-  const [showPopup, setShowPopup] = useState(false);
-
-  const { handleStart: handleLongPressStart, handleEnd: handleLongPressEnd } = useLongPress({
-    onLongPress: () => {
-      // Só abre o popup se o card não foi deslizado
-      if (Math.abs(offset) < 5) {
-        setShowPopup(true);
-      }
-    },
-    duration: 500,
-  });
-
-  const statusColors = {
-    pending: "border-neutral-800",
-    in_progress: "border-blue-500/30",
-    interrupted: "border-yellow-500/30",
-    completed: "border-green-500/30",
+export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
+  const difficultyColors: Record<string, string> = {
+    baixa: "bg-green-900/30 text-green-300",
+    média: "bg-yellow-900/30 text-yellow-300",
+    alta: "bg-red-900/30 text-red-300",
   };
 
-  const statusLabels = {
-    pending: "Pendente",
-    in_progress: "Em andamento",
-    interrupted: "Interrompida",
-    completed: "Concluída",
+  const priorityColors: Record<string, string> = {
+    baixa: "text-blue-400",
+    média: "text-orange-400",
+    alta: "text-red-400",
   };
 
-  const showDelete = offset < -10;
+  const energyLabels: Record<string, string> = {
+    low: "Baixa",
+    medium: "Média",
+    high: "Alta",
+  };
 
   return (
-    <>
-      <div 
-      className="relative overflow-hidden transition-all duration-300"
-      style={{
-        opacity: isDeleting ? 0 : 1,
-        maxHeight: isDeleting ? 0 : "200px",
-        marginBottom: isDeleting ? 0 : undefined,
-      }}
+    <div
+      className={`
+        rounded-2xl border p-4 sm:p-5 transition
+        ${
+          isHighlighted
+            ? "border-white bg-neutral-900/80 ring-2 ring-white/20"
+            : "border-neutral-700 bg-neutral-900/40 hover:bg-neutral-900/60"
+        }
+      `}
     >
-      {/* Fundo delete - só mostra para pending e interrupted */}
-      {canDelete && (
-        <div 
-          className="absolute inset-0 rounded-lg bg-red-500/20 flex items-center justify-end pr-4 transition-opacity duration-200"
-          style={{ opacity: showDelete ? 1 : 0 }}
-        >
-          <span className="text-red-400 text-sm font-medium">
-            Excluir
-          </span>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex-1">
+          <h3 className="text-sm sm:text-base font-medium text-white">
+            {activity.title}
+          </h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {activity.difficulty && (
+              <span className={`text-xs px-2 py-1 rounded-lg ${difficultyColors[activity.difficulty]}`}>
+                {activity.difficulty.charAt(0).toUpperCase() + activity.difficulty.slice(1)}
+              </span>
+            )}
+            <span className={`text-xs font-medium ${priorityColors[activity.priority]}`}>
+              Prioridade: {activity.priority}
+            </span>
+            <span className="text-xs text-neutral-400">
+              ⚡ {energyLabels[activity.energyRequired]}
+            </span>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Card */}
-      <div
-        onTouchStart={(e) => {
-          handleLongPressStart();
-          if (canDelete) onTouchStart(e);
-        }}
-        onTouchMove={(e) => {
-          // Só cancela o long press se houver movimento significativo
-          if (Math.abs(offset) > 5) {
-            handleLongPressEnd();
-          }
-          if (canDelete) onTouchMove(e);
-        }}
-        onTouchEnd={() => {
-          handleLongPressEnd();
-          if (canDelete) onTouchEnd();
-        }}
-        onMouseDown={(e) => {
-          handleLongPressStart();
-          if (canDelete) onMouseDown(e);
-        }}
-        onMouseMove={(e) => {
-          // Só cancela o long press se houver movimento significativo
-          if (Math.abs(offset) > 5) {
-            handleLongPressEnd();
-          }
-          if (canDelete) onMouseMove(e);
-        }}
-        onMouseUp={() => {
-          handleLongPressEnd();
-          if (canDelete) onMouseUp();
-        }}
-        onMouseLeave={() => {
-          handleLongPressEnd();
-          if (canDelete && isDragging) onMouseLeave();
-        }}
-        style={{
-          transform: canDelete ? `translateX(${offset}px)` : "translateX(0)",
-          transition:
-            isDragging
-              ? "none"
-              : "transform 0.3s ease-out, opacity 0.3s ease-out",
-          opacity: isDeleting ? 0 : 1,
-        }}
-        className={`relative z-10 rounded-xl border p-3 sm:p-4 bg-black cursor-pointer ${statusColors[activity.status]}`}
-      >
-        <div className="flex justify-between gap-2 items-start">
-          <p className="font-medium text-sm sm:text-base flex-1 break-words">{activity.title}</p>
-          <span className="text-xs text-neutral-400 shrink-0 whitespace-nowrap">
-            {statusLabels[activity.status]}
-          </span>
-        </div>
-
-        <p className="text-xs text-neutral-500 mt-2">
-          Prioridade: {activity.priority} · Dificuldade: {activity.difficulty}
-          {activity.dueDate && (
-            <> · Prazo {new Date(activity.dueDate).toLocaleDateString()}</>
+      <div className="flex items-center justify-between">
+        <div className="text-xs sm:text-sm text-neutral-400">
+          ⏱️ {activity.estimatedTime}min
+          {activity.dueDate && !isNaN(new Date(activity.dueDate).getTime()) && (
+            <>
+              {" • "}
+              <span>
+                Vence:{" "}
+                {new Date(activity.dueDate).toLocaleDateString("pt-BR", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            </>
           )}
-        </p>
+        </div>
+        <button
+          onClick={onStart}
+          className={`
+            flex items-center gap-2 px-3 py-2 rounded-lg
+            font-medium text-sm transition
+            ${
+              isHighlighted
+                ? "bg-white text-black hover:bg-neutral-200"
+                : "bg-neutral-800 text-white hover:bg-neutral-700"
+            }
+          `}
+        >
+          <PlayIcon className="w-4 h-4" />
+          Iniciar
+        </button>
       </div>
     </div>
-
-    <ActivityActionsPopup
-      activity={activity}
-      isOpen={showPopup}
-      onClose={() => setShowPopup(false)}
-    />
-    </>
   );
 }
