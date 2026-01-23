@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useActivities } from "@/hooks/useActivities";
-import { Difficulty, Priority } from "@/types/activity";
+import { Activity, Difficulty, Priority } from "@/types/activity";
 import { AddActivityForm } from "@/components/ui/AddActivityForm";
 import { ActivityCard } from "@/components/ui/ActivityCard";
-import { useSwipeDelete } from "@/hooks/useSwipeDelete";
 
 export default function ActivitiesPage() {
-  const { activities, addActivity, updateActivity, deleteActivity } =
-    useActivities();
+  const { activities, addActivity, updateActivity } = useActivities();
 
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
@@ -17,17 +15,12 @@ export default function ActivitiesPage() {
   const [priority, setPriority] = useState<Priority>("média");
   const [dueDate, setDueDate] = useState("");
 
-  const {
-    draggingId,
-    handleStart,
-    handleMove,
-    handleEnd,
-  } = useSwipeDelete({
-    onDelete: deleteActivity,
-  });
-
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Migração defensiva
@@ -67,11 +60,11 @@ export default function ActivitiesPage() {
   }
 
   const activeActivities = activities.filter(
-    a => a.status !== "completed"
+    (a) => a.status !== "completed"
   );
 
   const completedActivities = activities.filter(
-    a => a.status === "completed"
+    (a) => a.status === "completed"
   );
 
   return (
@@ -108,32 +101,13 @@ export default function ActivitiesPage() {
             </p>
           )}
 
-          {activeActivities.map(activity => {
-            const isDragging = draggingId === activity.id;
-            const canDelete =
-              activity.status === "pending" ||
-              activity.status === "interrupted";
-
-            return (
-              <ActivityCard
-                key={activity.id}
-                activity={activity}
-                isDragging={isDragging}
-                canDelete={canDelete}
-                onTouchStart={e => canDelete && handleStart(activity.id, e)}
-                onTouchMove={e => canDelete && handleMove(activity.id, e)}
-                onTouchEnd={() => canDelete && handleEnd(activity.id)}
-                onMouseDown={e => canDelete && handleStart(activity.id, e)}
-                onMouseMove={e => canDelete && handleMove(activity.id, e)}
-                onMouseUp={() => canDelete && handleEnd(activity.id)}
-                onMouseLeave={() =>
-                  canDelete &&
-                  draggingId === activity.id &&
-                  handleEnd(activity.id)
-                }
-              />
-            );
-          })}
+          {activeActivities.map((activity) => (
+            <ActivityCard
+              key={activity.id}
+              activity={activity}
+              onStart={() => updateActivity(activity.id, { status: "in_progress" })}
+            />
+          ))}
         </section>
 
         {/* Concluídas */}
@@ -148,22 +122,11 @@ export default function ActivitiesPage() {
             </p>
           )}
 
-          {completedActivities.map(activity => (
+          {completedActivities.map((activity) => (
             <ActivityCard
               key={activity.id}
               activity={activity}
-              isDragging={draggingId === activity.id}
-              canDelete={true}
-              onTouchStart={e => handleStart(activity.id, e)}
-              onTouchMove={e => handleMove(activity.id, e)}
-              onTouchEnd={() => handleEnd(activity.id)}
-              onMouseDown={e => handleStart(activity.id, e)}
-              onMouseMove={e => handleMove(activity.id, e)}
-              onMouseUp={() => handleEnd(activity.id)}
-              onMouseLeave={() =>
-                draggingId === activity.id &&
-                handleEnd(activity.id)
-              }
+              onStart={() => updateActivity(activity.id, { status: "pending" })}
             />
           ))}
         </section>
