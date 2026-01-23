@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 import { Activity } from "@/types/activity";
 
 export function useActivities() {
@@ -10,7 +10,8 @@ export function useActivities() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) {
       setActivities([]);
       setLoading(false);
       return;
@@ -19,17 +20,29 @@ export function useActivities() {
     async function fetchActivities() {
       try {
         setLoading(true);
-        const { data, error: err } = await supabase
+
+        if (!supabase || !user) {
+          setError("Supabase não está disponível");
+          setLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase
           .from("activities")
           .select("*")
-          .eq("user_id", user?.id)
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
-        if (err) throw err;
-        setActivities(data || []);
+        if (error) throw error;
+
+        setActivities(data ?? []);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao buscar atividades");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao buscar atividades"
+        );
       } finally {
         setLoading(false);
       }
@@ -45,66 +58,86 @@ export function useActivities() {
     difficulty: Activity["difficulty"] = "média",
     priority: Activity["priority"] = "média"
   ) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+
     try {
-      const { data, error: err } = await supabase
+      const { data, error } = await supabase
         .from("activities")
-        .insert([
-          {
-            user_id: user?.id,
-            title,
-            estimated_time: estimatedTime,
-            energy_required: energyRequired,
-            difficulty,
-            priority,
-            status: "pending",
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-        ])
+        .insert({
+          user_id: user.id,
+          title,
+          estimated_time: estimatedTime,
+          energy_required: energyRequired,
+          difficulty,
+          priority,
+          status: "pending",
+        })
         .select()
         .single();
 
-      if (err) throw err;
-      setActivities(prev => [data, ...prev]);
+      if (error) throw error;
+
+      setActivities((prev) => [data, ...prev]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao criar atividade");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao criar atividade"
+      );
     }
   }
 
-  async function updateActivity(id: string, updates: Partial<Activity>) {
+  async function updateActivity(
+    id: string,
+    updates: Partial<Activity>
+  ) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+
     try {
-      const { data, error: err } = await supabase
+      const { data, error } = await supabase
         .from("activities")
-        .update({
-          ...updates,
-          updated_at: new Date(),
-        })
+        .update({ ...updates, updated_at: new Date() })
         .eq("id", id)
-        .eq("user_id", user?.id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
-      if (err) throw err;
-      setActivities(prev =>
-        prev.map(a => (a.id === id ? data : a))
+      if (error) throw error;
+
+      setActivities((prev) =>
+        prev.map((a) => (a.id === id ? data : a))
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao atualizar atividade");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao atualizar atividade"
+      );
     }
   }
 
   async function deleteActivity(id: string) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+
     try {
-      const { error: err } = await supabase
+      const { error } = await supabase
         .from("activities")
         .delete()
         .eq("id", id)
-        .eq("user_id", user?.id);
+        .eq("user_id", user.id);
 
-      if (err) throw err;
-      setActivities(prev => prev.filter(a => a.id !== id));
+      if (error) throw error;
+
+      setActivities((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao deletar atividade");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao deletar atividade"
+      );
     }
   }
 

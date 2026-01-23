@@ -1,112 +1,135 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabaseClient";
-import { useCallback as reactUseCallback } from "react";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 export interface Session {
-    id: string;
-    user_id: string;
-    activity_id: string;
-    title: string;
-    status: "in_progress" | "completed" | "interrupted";
-    duration: number; // em minutos
-    started_at: string;
-    ended_at?: string;
+  id: string;
+  user_id: string;
+  activity_id: string;
+  title: string;
+  status: "in_progress" | "completed" | "interrupted";
+  duration: number; // minutos
+  started_at: string;
+  ended_at?: string;
 }
 
 export function useSessions() {
-    const { user } = useAuth();
-    const [sessions, setSessions] = useState<Session[]>([]);
-    const [currentSession, setCurrentSession] = useState<Session | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [currentSession, setCurrentSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const fetchSessions = useCallback(async () => {
-        try {
-            setLoading(true);
-            const { data, error: err } = await supabase
-                .from("sessions")
-                .select("*")
-                .eq("user_id", user?.id)
-                .order("started_at", { ascending: false });
+  const fetchSessions = useCallback(async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
 
-            if (err) throw err;
-            setSessions(data || []);
-            setError(null);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Erro ao buscar sessões");
-        } finally {
-            setLoading(false);
-        }
-    }, [user]);
+    try {
+      setLoading(true);
 
-    useEffect(() => {
-        if (!user) {
-            setSessions([]);
-            setLoading(false);
-            return;
-        }
+      const { data, error } = await supabase
+        .from("sessions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("started_at", { ascending: false });
 
-        fetchSessions();
-    }, [fetchSessions, user]);
+      if (error) throw error;
 
-    async function startSession(activityId: string, title: string) {
-        try {
-            const { data, error: err } = await supabase
-                .from("sessions")
-                .insert([
-                    {
-                        user_id: user?.id,
-                        activity_id: activityId,
-                        title,
-                        status: "in_progress",
-                        started_at: new Date(),
-                    },
-                ])
-                .select()
-                .single();
+      setSessions(data ?? []);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao buscar sessões"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
-            if (err) throw err;
-            setCurrentSession(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Erro ao iniciar sessão");
-        }
+  useEffect(() => {
+    if (!user) {
+      setSessions([]);
+      setCurrentSession(null);
+      setLoading(false);
+      return;
     }
 
-    async function endSession(status: "completed" | "interrupted", duration: number) {
-        if (!currentSession) return;
+    fetchSessions();
+  }, [fetchSessions, user]);
 
-        try {
-            const { data, error: err } = await supabase
-                .from("sessions")
-                .update({
-                    status,
-                    duration,
-                    ended_at: new Date(),
-                })
-                .eq("id", currentSession.id)
-                .select()
-                .single();
+  async function startSession(activityId: string, title: string) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
 
-            if (err) throw err;
-            setCurrentSession(null);
-            setSessions(prev => [data, ...prev.filter(s => s.id !== currentSession.id)]);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Erro ao encerrar sessão");
-        }
+    try {
+      const { data, error } = await supabase
+        .from("sessions")
+        .insert({
+          user_id: user.id,
+          activity_id: activityId,
+          title,
+          status: "in_progress",
+          started_at: new Date(),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCurrentSession(data);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao iniciar sessão"
+      );
     }
+  }
 
-    return {
-        sessions,
-        currentSession,
-        loading,
-        error,
-        startSession,
-        endSession,
-    };
-}
+  async function endSession(
+    status: "completed" | "interrupted",
+    duration: number
+  ) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user || !currentSession) return;
 
-// Implementation using React's useCallback
-function useCallback<T extends (...args: unknown[]) => unknown>(fn: T, deps: unknown[]): T {
-    return reactUseCallback(fn, deps);
+    try {
+      const { data, error } = await supabase
+        .from("sessions")
+        .update({
+          status,
+          duration,
+          ended_at: new Date(),
+        })
+        .eq("id", currentSession.id)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCurrentSession(null);
+      setSessions((prev) => [
+        data,
+        ...prev.filter((s) => s.id !== currentSession.id),
+      ]);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao encerrar sessão"
+      );
+    }
+  }
+
+  return {
+    sessions,
+    currentSession,
+    loading,
+    error,
+    startSession,
+    endSession,
+  };
 }

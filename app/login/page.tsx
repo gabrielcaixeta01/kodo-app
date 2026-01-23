@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,7 +14,7 @@ export default function LoginPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // ✅ QUANDO o user existir → navegar
+  // ✅ redireciona assim que o AuthContext receber o user
   useEffect(() => {
     if (user) {
       router.replace("/dashboard");
@@ -28,6 +28,13 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setError("Erro interno");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -37,8 +44,7 @@ export default function LoginPage() {
       setError("Email ou senha inválidos");
       setLoading(false);
     }
-    // ❌ NÃO faz router.push aqui
-    // O effect acima cuida disso quando o user chegar
+    // ❌ não redireciona aqui
   }
 
   return (
