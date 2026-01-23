@@ -20,8 +20,8 @@ export function ActivityActionsPopup({
   const [title, setTitle] = useState(activity.title);
   const [difficulty, setDifficulty] = useState<Difficulty>(activity.difficulty);
   const [priority, setPriority] = useState<Priority>(activity.priority);
-  const [dueDate, setDueDate] = useState(
-    activity.dueDate ? new Date(activity.dueDate).toISOString().split('T')[0] : ""
+  const [due_date, setDueDate] = useState(
+    activity.due_date ? new Date(activity.due_date).toISOString().split('T')[0] : ""
   );
 
   if (!isOpen) return null;
@@ -34,7 +34,7 @@ export function ActivityActionsPopup({
       title: title.trim(),
       difficulty,
       priority,
-      dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
+      due_date: due_date ? new Date(due_date).toISOString() : undefined,
     });
 
     onClose();
@@ -126,7 +126,7 @@ export function ActivityActionsPopup({
             </label>
             <input
               type="date"
-              value={dueDate}
+              value={due_date}
               onChange={e => setDueDate(e.target.value)}
               className="w-full rounded-xl bg-black border border-neutral-700
                          px-4 py-3 text-sm sm:text-base focus:outline-none

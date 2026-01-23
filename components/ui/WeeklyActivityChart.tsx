@@ -22,8 +22,8 @@ function getLast7DaysActivity(activities: Activity[]): DayData[] {
     nextDate.setDate(date.getDate() + 1);
 
     const count = activities.filter(a => {
-      if (!a.createdAt) return false; // Garante que existe created_at
-      const d = new Date(a.createdAt);
+      if (!a.created_at) return false; // Garante que existe created_at
+      const d = new Date(a.created_at);
       return d >= date && d < nextDate;
     }).length;
 

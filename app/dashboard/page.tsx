@@ -79,7 +79,7 @@ export default function DashboardPage() {
 
     updateActivity(activityId, { status: "in_progress" });
     startSession(activityId, title);
-    router.push("/session");
+    router.push("/focus");
   }
 
   return (

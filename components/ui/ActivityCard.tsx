@@ -54,7 +54,7 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
               Prioridade: {activity.priority}
             </span>
             <span className="text-xs text-neutral-400">
-              ⚡ {energyLabels[activity.energyRequired]}
+              ⚡ {energyLabels[activity.energy_required]}
             </span>
           </div>
         </div>
@@ -62,13 +62,13 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
 
       <div className="flex items-center justify-between">
         <div className="text-xs sm:text-sm text-neutral-400">
-          ⏱️ {activity.estimatedTime}min
-          {activity.dueDate && !isNaN(new Date(activity.dueDate).getTime()) && (
+          ⏱️ {activity.estimated_time}min
+          {activity.due_date && !isNaN(new Date(activity.due_date).getTime()) && (
             <>
               {" • "}
               <span>
                 Vence:{" "}
-                {new Date(activity.dueDate).toLocaleDateString("pt-BR", {
+                {new Date(activity.due_date).toLocaleDateString("pt-BR", {
                   month: "short",
                   day: "numeric",
                 })}

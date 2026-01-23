@@ -13,8 +13,8 @@ export function MonthCalendar() {
 
   const activitiesByDate = activities.reduce(
     (acc, activity) => {
-      if (activity.dueDate) {
-        const date = new Date(activity.dueDate).toDateString();
+      if (activity.due_date) {
+        const date = new Date(activity.due_date).toDateString();
         acc[date] = (acc[date] || 0) + 1;
       }
       return acc;
