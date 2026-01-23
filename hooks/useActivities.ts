@@ -41,7 +41,7 @@ export function useActivities() {
   async function addActivity(
     title: string,
     estimatedTime: number,
-    energyRequired: Activity["energyRequired"],
+    energyRequired: Activity["energy_required"],
     difficulty: Activity["difficulty"] = "média",
     priority: Activity["priority"] = "média"
   ) {

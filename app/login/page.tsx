@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -9,7 +10,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth();
   const router = useRouter();
+
+  // ✅ QUANDO o user existir → navegar
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,12 +34,11 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError("Email ou senha inválidos");
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
+    // ❌ NÃO faz router.push aqui
+    // O effect acima cuida disso quando o user chegar
   }
 
   return (
@@ -59,8 +68,8 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full rounded-xl bg-white text-black py-2 font-medium disabled:opacity-60"
           disabled={loading}
+          className="w-full rounded-xl bg-white text-black py-2 font-medium disabled:opacity-60"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>

@@ -34,12 +34,12 @@ export function activityToAction(activity: Activity): Action {
   if (activity.priority === "alta") reasons.push("Alta prioridade");
 
   // Score baseado em tempo estimado
-  if (activity.estimatedTime <= 15) {
+  if (activity.estimated_time <= 15) {
     score += 25;
     reasons.push("Rápido");
-  } else if (activity.estimatedTime <= 30) {
+  } else if (activity.estimated_time <= 30) {
     score += 15;
-  } else if (activity.estimatedTime <= 60) {
+  } else if (activity.estimated_time <= 60) {
     score += 10;
   } else {
     score += 5;
@@ -47,17 +47,17 @@ export function activityToAction(activity: Activity): Action {
   }
 
   // Score baseado em energia requerida
-  const energyScores: Record<Activity["energyRequired"], number> = {
+  const energyScores: Record<Activity["energy_required"], number> = {
     low: 15,
     medium: 10,
     high: 5,
   };
-  score += energyScores[activity.energyRequired];
+  score += energyScores[activity.energy_required];
 
   // Score baseado em data de vencimento
-  if (activity.dueDate) {
+  if (activity.due_date) {
     const daysUntilDue = Math.ceil(
-      (activity.dueDate - Date.now()) / (1000 * 60 * 60 * 24)
+      (new Date(activity.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
     );
     if (daysUntilDue <= 1) {
       score += 50;
@@ -83,21 +83,21 @@ export function getRankedActions(actions: Action[], context: Context): Action[] 
       let adjustedScore = action.score;
 
       // Ajusta score baseado no contexto de tempo disponível
-      if (context.availableTime < action.activity.estimatedTime) {
+      if (context.availableTime < action.activity.estimated_time) {
         adjustedScore *= 0.5;
-      } else if (context.availableTime >= action.activity.estimatedTime * 2) {
+      } else if (context.availableTime >= action.activity.estimated_time * 2) {
         adjustedScore *= 1.2;
       }
 
       // Ajusta score baseado na energia disponível
-      const energyMultipliers: Record<string, Record<Activity["energyRequired"], number>> = {
+      const energyMultipliers: Record<string, Record<Activity["energy_required"], number>> = {
         baixa: { low: 1.3, medium: 0.8, high: 0.3 },
         média: { low: 1.1, medium: 1.0, high: 0.7 },
         alta: { low: 1.0, medium: 1.1, high: 1.3 },
       };
 
       const multiplier =
-        energyMultipliers[context.energy][action.activity.energyRequired] || 1;
+        energyMultipliers[context.energy][action.activity.energy_required] || 1;
       adjustedScore *= multiplier;
 
       return {

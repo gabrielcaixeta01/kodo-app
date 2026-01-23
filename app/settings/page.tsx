@@ -2,21 +2,16 @@
 
 "use client";
 
-import { useState } from "react";
-import { DailyTimeSlider } from "@/components/ui/DailyTimeSlider";
-import { useSession } from "@/contexts/SessionContext";
-
-type EnergyLevel = "baixa" | "média" | "alta";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
-  const { resetWeeklyProgress } = useSession();
-  const [energy, setEnergy] = useState<EnergyLevel>("média");
-  const [dailyTime, setDailyTime] = useState(120); // minutes
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
-  const handleResetProgress = () => {
-    if (confirm("Tem certeza que deseja resetar o progresso semanal? Esta ação não pode ser desfeita.")) {
-      resetWeeklyProgress();
-    }
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
   };
 
   return (
@@ -30,24 +25,28 @@ export default function SettingsPage() {
           </p>
         </header>
 
-        {/* Daily Context */}
-        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
+        {/* User Info */}
+        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-4">
           <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Contexto diário
+            Conta
           </h2>
+          
+          <div className="space-y-2">
+            <p className="text-sm text-neutral-400">Email</p>
+            <p className="text-base">{user?.email}</p>
+          </div>
 
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
-            {/* Energy */}
-            <div className="space-y-3">
-              <p className="text-xs sm:text-sm text-neutral-400">
-                Nível de energia padrão
-              </p>
-
-              <div className="flex gap-2">
-                {(["baixa", "média", "alta"] as EnergyLevel[]).map(e => (
-                  <button
-                    key={e}
-                    onClick={() => setEnergy(e)}
+          <button
+            onClick={handleSignOut}
+            className="w-full sm:w-auto px-6 py-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+          >
+            Sair
+          </button>
+        </section>
+      </div>
+    </main>
+  );
+}
                     className={`px-4 py-1.5 rounded-full border text-xs uppercase tracking-widest transition ${
                       energy === e
                         ? "border-white text-white bg-white/5"

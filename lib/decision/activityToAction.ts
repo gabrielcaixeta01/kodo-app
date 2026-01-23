@@ -19,11 +19,11 @@ export function activityToAction(
         : activity.priority === "média"
         ? "média"
         : "baixa",
-    daysToDeadline: activity.dueDate
+    daysToDeadline: activity.due_date
       ? Math.max(
           0,
           Math.ceil(
-            (activity.dueDate - Date.now()) /
+            (new Date(activity.due_date).getTime() - Date.now()) /
               (1000 * 60 * 60 * 24)
           )
         )

@@ -1,13 +1,12 @@
 "use client";
 
-import { useSession } from "@/contexts/SessionContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { FooterNav } from "./FooterNav";
 
 export function ConditionalFooterNav() {
-  const { session } = useSession();
+  const { user } = useAuth();
 
-  // Se houver sessão ativa, não mostrar navegação
-  if (session) return null;
+  if (!user) return null;
 
   return <FooterNav />;
 }

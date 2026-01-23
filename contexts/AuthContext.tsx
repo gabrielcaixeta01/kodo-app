@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 type AuthContextType = {
   user: User | null;
   loading: boolean;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -16,16 +17,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // ✅ Chamar getUser() na montagem para obter sessão existente
+    const initAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
       setLoading(false);
-    });
+    };
+
+    initAuth();
+
+    // ✅ Escutar mudanças de autenticação em tempo real
+    // Isso é disparado quando:
+    // - Usuário faz login
+    // - Usuário faz logout
+    // - Sessão expira
+    // - Token é refrescado
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        // Não resetar loading aqui, apenas atualizar user
+        setUser(session?.user ?? null);
+        // Quando o user muda, o proxy.ts vai redirecionar automaticamente
+        // se a rota não for pública
+      }
+    );
 
     return () => subscription?.unsubscribe();
   }, []);
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    // proxy.ts vai redirecionar para /login automaticamente
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

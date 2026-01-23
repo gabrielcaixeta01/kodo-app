@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/contexts/SessionContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
 type AlignmentStatus = "bom" | "aviso" | "fora-de-trilha";
@@ -15,15 +15,26 @@ function getDayName(date: Date): string {
 }
 
 export default function ProgressPage() {
-  const { history, interrupted } = useSession();
-  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+   const { user, loading: authLoading } = useAuth();
+   const { activities, loading: activitiesLoading, updateActivity } = useActivities();
+   const { startSession } = useSessions();
+   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
-    }, 0);
+    }, 100); // pequeno atraso para evitar flicker
+
     return () => clearTimeout(timer);
+    //
   }, []);
+
+  useEffect(() => {
+    if (mounted && !authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, mounted, router]);
 
   /* ------------------ métricas ------------------ */
   const totalSessions = mounted ? history.length : 0;

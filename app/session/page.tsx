@@ -1,49 +1,36 @@
 "use client";
 
-import { useSession } from "@/contexts/SessionContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { CircularProgress } from "@/components/ui/CircularProgress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useActivities } from "@/hooks/useActivities";
+import { useSessions } from "@/hooks/useSessions";
 
 export default function SessionPage() {
-  const { session, endSession, interruptSession } = useSession();
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const expectedMinutes = 60; // duração alvo da sessão
+   const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
+    const { activities, loading: activitiesLoading, updateActivity } = useActivities();
+    const { startSession } = useSessions();
+    const [mounted, setMounted] = useState(false);
 
   // Redireciona se não houver sessão (após montagem)
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
-    }, 0);
+    }, 100); // pequeno atraso para evitar flicker
+
     return () => clearTimeout(timer);
+    //
   }, []);
 
-  // redireciona se não houver sessão
   useEffect(() => {
-    if (!mounted) return;
-
-    // Se não tem sessão após montagem, volta ao dashboard
-    if (!session) {
-      router.replace("/");
+    if (mounted && !authLoading && !user) {
+      router.push("/login");
     }
-  }, [mounted, session, router]);
+  }, [user, authLoading, mounted, router]);
 
-  // controla o tempo (atualiza a cada segundo para progresso suave)
-  useEffect(() => {
-    if (!mounted || !session) return;
-
-    function updateTime() {
-      if (!session) return;
-      const diff = Date.now() - session.startedAt;
-      setElapsedMs(diff);
-    }
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, [mounted, session]);
+  
 
   // guarda de render
   if (!mounted) return null;

@@ -1,16 +1,18 @@
 export type Difficulty = "baixa" | "média" | "alta";
 export type Priority = "baixa" | "média" | "alta";
+export type EnergyRequired = "low" | "medium" | "high";
 export type ActivityStatus = "pending" | "in_progress" | "completed" | "interrupted";
 
 export interface Activity {
   id: string;
+  user_id: string;
   title: string;
   status: ActivityStatus;
-  estimatedTime: number;
-  energyRequired: "low" | "medium" | "high";
+  estimated_time: number;
+  energy_required: EnergyRequired;
   difficulty: Difficulty;
   priority: Priority;
-  dueDate?: number;
-  createdAt: number;
-  updatedAt: number;
+  due_date?: string;
+  created_at: string;
+  updated_at: string;
 }
