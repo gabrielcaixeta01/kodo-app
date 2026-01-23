@@ -35,7 +35,12 @@ export function useSessions() {
 
       if (error) throw error;
 
-      setSessions(data ?? []);
+      const list = data ?? [];
+      setSessions(list);
+
+      // ✅ Garante sessão atual em navegações
+      const active = list.find((s) => s.status === "in_progress") || null;
+      setCurrentSession(active);
       setError(null);
     } catch (err) {
       setError(
@@ -64,22 +69,31 @@ export function useSessions() {
     if (!supabase || !user) return;
 
     try {
+      const payload = {
+        user_id: user.id,
+        activity_id: activityId,
+        title,
+        status: "in_progress",
+        started_at: new Date(),
+      };
+
+      console.log("[startSession] payload", JSON.stringify(payload, null, 2));
+
       const { data, error } = await supabase
         .from("sessions")
-        .insert({
-          user_id: user.id,
-          activity_id: activityId,
-          title,
-          status: "in_progress",
-          started_at: new Date(),
-        })
+        .insert(payload)
         .select()
         .single();
 
       if (error) throw error;
 
       setCurrentSession(data);
+      setSessions((prev) => [data, ...prev]);
     } catch (err) {
+      console.error(
+        "[startSession] error",
+        err && typeof err === "object" ? JSON.stringify(err, null, 2) : err
+      );
       setError(
         err instanceof Error
           ? err.message
