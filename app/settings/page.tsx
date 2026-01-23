@@ -47,48 +47,4 @@ export default function SettingsPage() {
     </main>
   );
 }
-                    className={`px-4 py-1.5 rounded-full border text-xs uppercase tracking-widest transition ${
-                      energy === e
-                        ? "border-white text-white bg-white/5"
-                        : "border-neutral-700 text-neutral-500 hover:border-neutral-600 hover:text-neutral-400"
-                    }`}
-                  >
-                    {e}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Time */}
-            <div className="space-y-2">
-              <DailyTimeSlider 
-                value={dailyTime} 
-                onChange={setDailyTime}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* System */}
-        <section className="rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
-          <h2 className="text-xs uppercase tracking-widest text-neutral-500">
-            Sistema
-          </h2>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <p className="text-xs sm:text-sm text-neutral-400">Resetar o progresso semanal</p>
-              <button 
-                onClick={handleResetProgress}
-                className="w-full rounded-lg border border-neutral-700 px-4 py-2.5 text-xs sm:text-sm text-neutral-400 hover:text-white hover:border-neutral-600 hover:bg-white/5 transition font-medium"
-              >
-                Resetar
-              </button>
-            </div>
-            
-          </div>
-        </section>
-      </div>
-    </main>
-  );
-}
+                 
