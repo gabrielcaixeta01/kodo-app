@@ -60,33 +60,47 @@ export function useActivities() {
     dueDate?: string
   ) {
     const supabase = getSupabaseClient();
-    if (!supabase || !user) return;
+    if (!supabase || !user) {
+      console.error("Supabase ou user não disponível");
+      return;
+    }
 
     try {
+      const payload = {
+        user_id: user.id,
+        title,
+        estimated_time: estimatedTime,
+        energy_required: energyRequired,
+        difficulty,
+        priority,
+        status: "pending",
+        due_date: dueDate || null,
+      };
+      
+      console.log("Payload completo:", JSON.stringify(payload, null, 2));
+      
       const { data, error } = await supabase
         .from("activities")
-        .insert({
-          user_id: user.id,
-          title,
-          estimated_time: estimatedTime,
-          energy_required: energyRequired,
-          difficulty,
-          priority,
-          status: "pending",
-          due_date: dueDate || null,
-        })
+        .insert(payload)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro completo:", JSON.stringify(error, null, 2));
+        throw error;
+      }
 
-      setActivities((prev) => [data, ...prev]);
+      console.log("Atividade criada:", data);
+
+      if (data) {
+        setActivities((prev) => [data, ...prev]);
+      } else {
+        console.warn("Dados retornados são nulos");
+      }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erro ao criar atividade"
-      );
+      const errorMsg = err instanceof Error ? err.message : "Erro ao criar atividade";
+      console.error("Catch error:", errorMsg);
+      setError(errorMsg);
     }
   }
 

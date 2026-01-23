@@ -30,21 +30,32 @@ export default function LoginPage() {
 
     const supabase = getSupabaseClient();
     if (!supabase) {
-      setError("Erro interno");
+      setError(
+        "Erro de configuração: Variáveis de ambiente do Supabase não configuradas. Verifique seu .env.local"
+      );
       setLoading(false);
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError("Email ou senha inválidos");
+      if (error) {
+        setError(error.message || "Email ou senha inválidos");
+        setLoading(false);
+      }
+      // ✅ AuthContext se encarrega do redirect
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao fazer login"
+      );
       setLoading(false);
     }
-    // ❌ não redireciona aqui
   }
 
   return (

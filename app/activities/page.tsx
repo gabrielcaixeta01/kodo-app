@@ -14,6 +14,9 @@ export default function ActivitiesPage() {
   const [difficulty, setDifficulty] = useState<Difficulty>("média");
   const [priority, setPriority] = useState<Priority>("média");
   const [dueDate, setDueDate] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -37,27 +40,53 @@ export default function ActivitiesPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
+    handleAddActivity();
+  }
 
-    // Mapear dificuldade para energy_required
-    const energyMap: Record<Difficulty, Activity["energy_required"]> = {
-      baixa: "low",
-      média: "medium",
-      alta: "high",
-    };
+  async function handleAddActivity() {
+    // ✅ Evita múltiplos envios
+    if (isSubmitting) return;
 
-    addActivity(
-      title.trim(),
-      30,          // estimated_time padrão
-      energyMap[difficulty],
-      difficulty,
-      priority,
-      dueDate || undefined
-    );
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
 
-    setTitle("");
-    setDifficulty("média");
-    setPriority("média");
-    setDueDate("");
+    try {
+      // Mapear dificuldade para energy_required
+      const energyMap: Record<Difficulty, Activity["energy_required"]> = {
+        baixa: "low",
+        média: "medium",
+        alta: "high",
+      };
+
+      // ✅ Aguarda completar
+      await addActivity(
+        title.trim(),
+        30,
+        energyMap[difficulty],
+        difficulty,
+        priority,
+        dueDate || undefined
+      );
+
+      // ✅ Só limpa se conseguiu
+      setTitle("");
+      setDifficulty("média");
+      setPriority("média");
+      setDueDate("");
+      setSuccess("Atividade criada com sucesso!");
+
+      // Limpa mensagem de sucesso após 2 segundos
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao criar atividade"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const activeActivities = activities.filter(
@@ -89,6 +118,20 @@ export default function ActivitiesPage() {
           setDueDate={setDueDate}
           onSubmit={handleSubmit}
         />
+
+        {/* ✅ Feedback de sucesso */}
+        {success && (
+          <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
+            <p className="text-sm text-green-400">{success}</p>
+          </div>
+        )}
+
+        {/* ✅ Feedback de erro */}
+        {error && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
 
         {/* Ativas */}
         <section className="space-y-3">

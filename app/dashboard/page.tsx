@@ -74,9 +74,12 @@ export default function DashboardPage() {
     setError(null);
 
     try {
-      updateActivity(activityId, { status: "in_progress" });
+      // ✅ Aguarda atualizar a atividade
+      await updateActivity(activityId, { status: "in_progress" });
+      // ✅ Depois inicia a sessão
       await startSession(activityId, title);
-      router.push("/focus"); // confirme que existe
+      // ✅ Só redireciona se tudo deu certo
+      router.push("/focus");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao iniciar sessão"
