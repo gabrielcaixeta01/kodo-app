@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Kodo",
@@ -20,6 +21,7 @@ export default function RootLayout({
           {children}
           <ConditionalFooterNav />
         </AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
