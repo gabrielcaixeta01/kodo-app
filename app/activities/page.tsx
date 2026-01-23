@@ -50,7 +50,8 @@ export default function ActivitiesPage() {
       30,          // estimated_time padrão
       energyMap[difficulty],
       difficulty,
-      priority
+      priority,
+      dueDate || undefined
     );
 
     setTitle("");

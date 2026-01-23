@@ -56,7 +56,8 @@ export function useActivities() {
     estimatedTime: number,
     energyRequired: Activity["energy_required"],
     difficulty: Activity["difficulty"] = "média",
-    priority: Activity["priority"] = "média"
+    priority: Activity["priority"] = "média",
+    dueDate?: string
   ) {
     const supabase = getSupabaseClient();
     if (!supabase || !user) return;
@@ -72,6 +73,7 @@ export function useActivities() {
           difficulty,
           priority,
           status: "pending",
+          due_date: dueDate || null,
         })
         .select()
         .single();

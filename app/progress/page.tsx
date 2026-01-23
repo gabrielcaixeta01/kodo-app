@@ -33,6 +33,15 @@ export default function ProgressPage() {
     }
   }, [user, authLoading, mounted, router]);
 
+  // ✅ Filtrar apenas últimos 7 dias
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  
+  const sessionsThisWeek = sessions.filter((s) => {
+    const sessionDate = new Date(s.started_at);
+    return sessionDate >= sevenDaysAgo;
+  });
+
   if (authLoading || sessionsLoading || !mounted) {
     return (
       <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
@@ -47,7 +56,7 @@ export default function ProgressPage() {
     );
   }
 
-  const finishedSessions = sessions.filter((s) => s.ended_at);
+  const finishedSessions = sessionsThisWeek.filter((s) => s.ended_at);
   const completedSessions = finishedSessions.filter((s) => s.status === "completed");
   const interruptedSessions = finishedSessions.filter((s) => s.status === "interrupted");
 
@@ -67,10 +76,9 @@ export default function ProgressPage() {
       ).size
     : 0;
 
-  const consistency = Math.min(
-    Math.round((daysWithSessions / 7) * 100),
-    100
-  );
+  const consistency = mounted && daysWithSessions > 0
+    ? Math.round((daysWithSessions / 7) * 100)
+    : 0;
 
   const completionRate =
     mounted && totalSessions + totalInterrupted > 0

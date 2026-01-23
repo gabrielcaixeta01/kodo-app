@@ -15,6 +15,8 @@ export default function FocusPage() {
 
   const [mounted, setMounted] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Espera montagem para evitar flicker
   useEffect(() => {
@@ -82,61 +84,89 @@ export default function FocusPage() {
   const progressValue = Math.min(100, (elapsedMs / (expectedMinutes * 60000)) * 100);
 
   const handleComplete = async () => {
-    await endSession("completed", minutesElapsed);
-    if (activity) await updateActivity(activity.id, { status: "completed" });
-    router.replace("/progress");
+    // ✅ Evita múltiplos cliques
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      await endSession("completed", minutesElapsed);
+      if (activity) await updateActivity(activity.id, { status: "completed" });
+      router.replace("/progress");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao concluir sessão"
+      );
+      setIsProcessing(false);
+    }
   };
 
   const handleInterrupt = async () => {
-    await endSession("interrupted", minutesElapsed);
-    if (activity) await updateActivity(activity.id, { status: "interrupted" });
-    router.replace("/dashboard");
+    // ✅ Evita múltiplos cliques
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      await endSession("interrupted", minutesElapsed);
+      if (activity) await updateActivity(activity.id, { status: "interrupted" });
+      router.replace("/dashboard");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao interromper sessão"
+      );
+      setIsProcessing(false);
+    }
   };
 
   return (
     <main className="min-h-screen bg-black text-white p-4 sm:p-6 flex items-center justify-center">
-      <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-4 sm:p-6 space-y-6">
-        <h1 className="text-lg sm:text-xl font-medium">Sessão de foco</h1>
+      <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-6 space-y-6">
+        {/* ✅ Feedback de erro */}
+        {error && (
+          <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <p className="text-xs sm:text-sm text-neutral-400">Atividade atual</p>
-          <p className="text-base sm:text-lg font-medium break-words">
-            {activity?.title || currentSession.title}
-          </p>
+        <div className="flex items-center justify-center py-2">
+          <CircularProgress
+            value={progressValue}
+            label={`meta: ${expectedMinutes} min`}
+          />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 items-center">
-          <div className="flex items-center justify-center py-2">
-            <CircularProgress
-              value={progressValue}
-              label={`meta: ${expectedMinutes} min`}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-xs sm:text-sm text-neutral-400">Tempo</p>
-            <p className="text-base sm:text-lg font-medium">
-              {minutesElapsed} min
-            </p>
-            <p className="text-xs text-neutral-500">
-              {Math.floor((elapsedMs % 60000) / 1000)}s
-            </p>
-          </div>
+        <div className="space-y-2">
+          <p className="text-xs sm:text-sm text-neutral-400">Tempo</p>
+          <p className="text-base sm:text-lg font-medium">
+            {minutesElapsed} min
+          </p>
+          <p className="text-xs text-neutral-500">
+            {Math.floor((elapsedMs % 60000) / 1000)}s
+          </p>
         </div>
 
         <div className="space-y-3">
           <button
             onClick={handleComplete}
-            className="w-full rounded-xl border border-green-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-green-400 hover:border-green-500 hover:text-green-300 transition font-medium"
+            disabled={isProcessing}
+            className="w-full rounded-xl border border-green-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-green-400 hover:border-green-500 hover:text-green-300 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Concluir sessão
+            {isProcessing ? "Processando..." : "Concluir sessão"}
           </button>
 
           <button
             onClick={handleInterrupt}
-            className="w-full rounded-xl border border-yellow-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition font-medium"
+            disabled={isProcessing}
+            className="w-full rounded-xl border border-yellow-500/40 py-2.5 sm:py-2 text-sm sm:text-base text-yellow-400 hover:border-yellow-500 hover:text-yellow-300 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Interromper sessão
+            {isProcessing ? "Processando..." : "Interromper sessão"}
           </button>
         </div>
       </div>

@@ -13,16 +13,13 @@ import { activityToAction, getRankedActions } from "@/lib/ranking";
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const {
-    activities,
-    loading: activitiesLoading,
-    updateActivity,
-  } = useActivities();
+  const { activities, loading: activitiesLoading, updateActivity } =
+    useActivities();
   const { startSession } = useSessions();
 
   const [starting, setStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // 🔹 contexto fixo (hook-safe)
   const context = useMemo(
     () => ({
       availableTime: 60,
@@ -31,7 +28,6 @@ export default function DashboardPage() {
     []
   );
 
-  // 🔹 dados derivados SEM early return
   const pendingActivities = useMemo(
     () => activities.filter((a) => a.status === "pending"),
     [activities]
@@ -50,14 +46,12 @@ export default function DashboardPage() {
   const nextAction = rankedActions[0];
   const otherActions = rankedActions.slice(1);
 
-  // 🔒 Guard extra
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [authLoading, user, router]);
 
-  // ⏳ loading visual
   if (authLoading) {
     return (
       <main className="min-h-screen bg-black text-white p-6">
@@ -73,13 +67,23 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  function handleStart(activityId: string, title: string) {
+  async function handleStart(activityId: string, title: string) {
     if (starting) return;
-    setStarting(true);
 
-    updateActivity(activityId, { status: "in_progress" });
-    startSession(activityId, title);
-    router.push("/focus");
+    setStarting(true);
+    setError(null);
+
+    try {
+      updateActivity(activityId, { status: "in_progress" });
+      await startSession(activityId, title);
+      router.push("/focus"); // confirme que existe
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao iniciar sessão"
+      );
+    } finally {
+      setStarting(false);
+    }
   }
 
   return (
@@ -93,6 +97,10 @@ export default function DashboardPage() {
         </header>
 
         <MonthCalendar />
+
+        {error && (
+          <p className="text-sm text-red-400">{error}</p>
+        )}
 
         {activitiesLoading && (
           <div className="rounded-2xl border border-neutral-700 p-6 animate-pulse">
