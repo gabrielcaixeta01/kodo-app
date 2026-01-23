@@ -1,13 +1,11 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useSessions } from "@/hooks/useSessions";
 
 type AlignmentStatus = "bom" | "aviso" | "fora-de-trilha";
-
-function minutesBetween(start: number, end: number) {
-  return Math.floor((end - start) / 60000);
-}
 
 function getDayName(date: Date): string {
   const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
@@ -16,10 +14,9 @@ function getDayName(date: Date): string {
 
 export default function ProgressPage() {
   const router = useRouter();
-   const { user, loading: authLoading } = useAuth();
-   const { activities, loading: activitiesLoading, updateActivity } = useActivities();
-   const { startSession } = useSessions();
-   const [mounted, setMounted] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const { sessions, loading: sessionsLoading } = useSessions();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,21 +33,36 @@ export default function ProgressPage() {
     }
   }, [user, authLoading, mounted, router]);
 
+  if (authLoading || sessionsLoading || !mounted) {
+    return (
+      <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
+        <div className="max-w-3xl w-full mx-auto">
+          <div className="rounded-2xl border border-neutral-800 p-6 space-y-4 animate-pulse">
+            <div className="h-6 bg-neutral-800 rounded" />
+            <div className="h-4 bg-neutral-800 rounded w-2/3" />
+            <div className="h-24 bg-neutral-800 rounded" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const finishedSessions = sessions.filter((s) => s.ended_at);
+  const completedSessions = finishedSessions.filter((s) => s.status === "completed");
+  const interruptedSessions = finishedSessions.filter((s) => s.status === "interrupted");
+
   /* ------------------ métricas ------------------ */
-  const totalSessions = mounted ? history.length : 0;
-  const totalInterrupted = mounted ? interrupted.length : 0;
+  const totalSessions = mounted ? completedSessions.length : 0;
+  const totalInterrupted = mounted ? interruptedSessions.length : 0;
 
   const totalMinutes = mounted
-    ? history.reduce(
-        (sum, s) => sum + minutesBetween(s.startedAt, s.endedAt),
-        0
-      )
+    ? finishedSessions.reduce((sum, s) => sum + (s.duration ?? 0), 0)
     : 0;
 
   const daysWithSessions = mounted
     ? new Set(
-        history.map(s =>
-          new Date(s.startedAt).toDateString()
+        finishedSessions.map((s) =>
+          new Date(s.started_at).toDateString()
         )
       ).size
     : 0;
@@ -71,29 +83,29 @@ export default function ProgressPage() {
 
   /* ------------------ padrões ------------------ */
   const morningSessions = mounted
-    ? history.filter(s => {
-        const h = new Date(s.startedAt).getHours();
+    ? finishedSessions.filter((s) => {
+        const h = new Date(s.started_at).getHours();
         return h >= 6 && h < 12;
       }).length
     : 0;
 
   const afternoonSessions = mounted
-    ? history.filter(s => {
-        const h = new Date(s.startedAt).getHours();
+    ? finishedSessions.filter((s) => {
+        const h = new Date(s.started_at).getHours();
         return h >= 12 && h < 18;
       }).length
     : 0;
 
   const nightSessions = mounted
-    ? history.filter(s => {
-        const h = new Date(s.startedAt).getHours();
+    ? finishedSessions.filter((s) => {
+        const h = new Date(s.started_at).getHours();
         return h >= 18;
       }).length
     : 0;
 
   const weekdayDistribution = mounted
-    ? history.reduce((acc, s) => {
-        const day = getDayName(new Date(s.startedAt));
+    ? finishedSessions.reduce((acc, s) => {
+        const day = getDayName(new Date(s.started_at));
         acc[day] = (acc[day] || 0) + 1;
         return acc;
       }, {} as Record<string, number>)
@@ -111,48 +123,28 @@ export default function ProgressPage() {
 
   const patterns: string[] = [];
 
-  if (mounted) {
-    if (
-      morningSessions > afternoonSessions &&
-      morningSessions > nightSessions
-    ) {
-      patterns.push(
-        "Você tem melhor performance pela manhã."
-      );
-    } else if (
-      afternoonSessions > morningSessions &&
-      afternoonSessions > nightSessions
-    ) {
-      patterns.push(
-        "Seu pico de produtividade é à tarde."
-      );
+  if (mounted && finishedSessions.length > 0) {
+    if (morningSessions > afternoonSessions && morningSessions > nightSessions) {
+      patterns.push("Você tem melhor performance pela manhã.");
+    } else if (afternoonSessions > morningSessions && afternoonSessions > nightSessions) {
+      patterns.push("Seu pico de produtividade é à tarde.");
     } else if (nightSessions > morningSessions) {
-      patterns.push(
-        "Você tende a focar mais à noite."
-      );
+      patterns.push("Você tende a focar mais à noite.");
     }
 
     if (completionRate >= 80) {
-      patterns.push(
-        "Excelente taxa de conclusão das sessões."
-      );
+      patterns.push("Excelente taxa de conclusão das sessões.");
     } else if (completionRate < 50) {
-      patterns.push(
-        "Muitas sessões foram interrompidas."
-      );
+      patterns.push("Muitas sessões foram interrompidas.");
     }
 
     if (mostProductiveDay) {
-      patterns.push(
-        `${mostProductiveDay} foi seu dia mais produtivo.`
-      );
+      patterns.push(`${mostProductiveDay} foi seu dia mais produtivo.`);
     }
+  }
 
-    if (patterns.length === 0) {
-      patterns.push(
-        "Ainda não há dados suficientes para identificar padrões."
-      );
-    }
+  if (patterns.length === 0) {
+    patterns.push("Ainda não há dados suficientes para identificar padrões.");
   }
 
   /* ------------------ alinhamento ------------------ */
