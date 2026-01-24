@@ -6,12 +6,13 @@ import { useState } from "react";
 
 interface Props {
   activity: Activity;
-  onStart: () => void | Promise<void>;
+  onStart?: () => void | Promise<void>;
   isHighlighted?: boolean;
 }
 
 export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
   const [isLoading, setIsLoading] = useState(false);
+  const isCompleted = activity.status === "completed";
   
   const difficultyColors: Record<string, string> = {
     baixa: "bg-green-900/30 text-green-300",
@@ -26,6 +27,7 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
   };
 
   async function handleClick() {
+    if (!onStart || isCompleted) return;
     setIsLoading(true);
     try {
       await onStart();
@@ -79,23 +81,27 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
             </>
           )}
         </div>
-        <button
-          onClick={handleClick}
-          disabled={isLoading}
-          className={`
-            flex items-center gap-2 px-3 py-2 rounded-lg
-            font-medium text-sm transition
-            ${
-              isHighlighted
-                ? "bg-white text-black hover:bg-neutral-200 disabled:bg-neutral-300"
-                : "bg-neutral-800 text-white hover:bg-neutral-700 disabled:bg-neutral-900"
-            }
-            ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
-          `}
-        >
-          <PlayIcon className={`w-4 h-4 ${isLoading ? "animate-pulse" : ""}`} />
-          {isLoading ? "Iniciando..." : "Iniciar"}
-        </button>
+        {isCompleted || !onStart ? (
+          <div className="text-xs sm:text-sm text-neutral-500">Concluída</div>
+        ) : (
+          <button
+            onClick={handleClick}
+            disabled={isLoading}
+            className={`
+              flex items-center gap-2 px-3 py-2 rounded-lg
+              font-medium text-sm transition
+              ${
+                isHighlighted
+                  ? "bg-white text-black hover:bg-neutral-200 disabled:bg-neutral-300"
+                  : "bg-neutral-800 text-white hover:bg-neutral-700 disabled:bg-neutral-900"
+              }
+              ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
+            `}
+          >
+            <PlayIcon className={`w-4 h-4 ${isLoading ? "animate-pulse" : ""}`} />
+            {isLoading ? "Iniciando..." : "Iniciar"}
+          </button>
+        )}
       </div>
     </div>
   );

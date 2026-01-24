@@ -15,7 +15,7 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const { activities, loading: activitiesLoading, updateActivity } =
     useActivities();
-  const { startSession } = useSessions();
+  const { startSession, sessions } = useSessions();
 
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +29,10 @@ export default function DashboardPage() {
   );
 
   const pendingActivities = useMemo(
-    () => activities.filter((a) => a.status === "pending"),
+    () =>
+      activities.filter(
+        (a) => a.status === "pending" || a.status === "interrupted"
+      ),
     [activities]
   );
 
@@ -74,10 +77,13 @@ export default function DashboardPage() {
     setError(null);
 
     try {
-      // ✅ Aguarda atualizar a atividade
+      const lastInterrupted = sessions.find(
+        (s) => s.activity_id === activityId && s.status === "interrupted"
+      );
+      const resumeMinutes = lastInterrupted?.duration ?? 0;
+
       await updateActivity(activityId, { status: "in_progress" });
-      // ✅ Depois inicia a sessão
-      await startSession(activityId, title);
+      await startSession(activityId, title, resumeMinutes);
       // ✅ Só redireciona se tudo deu certo
       router.push("/focus");
     } catch (err) {
@@ -112,7 +118,7 @@ export default function DashboardPage() {
         )}
 
         {!activitiesLoading && rankedActions.length === 0 && (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-center border border-neutral-700 rounded-2xl p-6 text-neutral-500">
             Nenhuma atividade ainda.
           </p>
         )}

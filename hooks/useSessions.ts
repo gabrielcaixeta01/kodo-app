@@ -64,17 +64,22 @@ export function useSessions() {
     fetchSessions();
   }, [fetchSessions, user]);
 
-  async function startSession(activityId: string, title: string) {
+  async function startSession(
+    activityId: string,
+    title: string,
+    resumeDurationMinutes = 0
+  ) {
     const supabase = getSupabaseClient();
     if (!supabase || !user) return;
 
     try {
+      const startedAt = new Date(Date.now() - resumeDurationMinutes * 60000);
       const payload = {
         user_id: user.id,
         activity_id: activityId,
         title,
         status: "in_progress",
-        started_at: new Date(),
+        started_at: startedAt,
       };
 
       console.log("[startSession] payload", JSON.stringify(payload, null, 2));

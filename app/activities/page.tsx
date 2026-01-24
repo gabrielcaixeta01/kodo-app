@@ -11,7 +11,7 @@ import { ActivityCard } from "@/components/ui/ActivityCard";
 export default function ActivitiesPage() {
   const router = useRouter();
   const { activities, addActivity, updateActivity } = useActivities();
-  const { startSession } = useSessions();
+  const { startSession, sessions } = useSessions();
 
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
@@ -95,8 +95,13 @@ export default function ActivitiesPage() {
 
   async function handleStartActivity(activityId: string, activityTitle: string) {
     try {
+      const lastInterrupted = sessions.find(
+        (s) => s.activity_id === activityId && s.status === "interrupted"
+      );
+      const resumeMinutes = lastInterrupted?.duration ?? 0;
+
       await updateActivity(activityId, { status: "in_progress" });
-      await startSession(activityId, activityTitle);
+      await startSession(activityId, activityTitle, resumeMinutes);
       router.push("/focus");
     } catch (err) {
       setError(
@@ -188,7 +193,6 @@ export default function ActivitiesPage() {
             <ActivityCard
               key={activity.id}
               activity={activity}
-              onStart={() => updateActivity(activity.id, { status: "pending" })}
             />
           ))}
         </section>
