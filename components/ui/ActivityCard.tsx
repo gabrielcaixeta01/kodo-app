@@ -13,6 +13,7 @@ interface Props {
 export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const isCompleted = activity.status === "completed";
+  const isInterrupted = activity.status === "interrupted";
   
   const difficultyColors: Record<string, string> = {
     baixa: "bg-green-900/30 text-green-300",
@@ -56,6 +57,11 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
             <div className="text-sm text-neutral-400">Concluída</div>
           ) : (
             <div className="flex flex-wrap items-center gap-2 mt-2">
+              {isInterrupted && (
+                <span className="text-xs px-2 py-1 rounded-lg bg-orange-900/30 text-orange-300 border border-orange-500/30">
+                  Interrompida
+                </span>
+              )}
               {activity.difficulty && (
                 <span className={`text-xs px-2 py-1 rounded-lg ${difficultyColors[activity.difficulty]}`}>
                   {activity.difficulty.charAt(0).toUpperCase() + activity.difficulty.slice(1)}
@@ -103,7 +109,7 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
             `}
           >
             <PlayIcon className={`w-4 h-4 ${isLoading ? "animate-pulse" : ""}`} />
-            {isLoading ? "Iniciando..." : "Iniciar"}
+            {isLoading ? "Iniciando..." : isInterrupted ? "Retomar" : "Iniciar"}
           </button>
         )}
 
