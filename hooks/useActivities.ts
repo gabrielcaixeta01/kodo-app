@@ -94,6 +94,13 @@ export function useActivities() {
     }
 
     try {
+      // Ajusta due_date para meio-dia local evitando problema de timezone
+      let formattedDueDate = null;
+      if (dueDate) {
+        const [year, month, day] = dueDate.split('-').map(Number);
+        formattedDueDate = new Date(year, month - 1, day, 12, 0, 0).toISOString();
+      }
+
       const payload = {
         user_id: user.id,
         title,
@@ -102,7 +109,7 @@ export function useActivities() {
         difficulty,
         priority,
         status: "pending",
-        due_date: dueDate || null,
+        due_date: formattedDueDate,
       };
       
       console.log("Payload completo:", JSON.stringify(payload, null, 2));

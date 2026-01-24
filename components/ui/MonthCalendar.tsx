@@ -51,6 +51,7 @@ export function MonthCalendar() {
             ? new Date(year, month, day).toDateString()
             : null;
           const count = dateStr ? activitiesByDate[dateStr] || 0 : 0;
+          const dotsToShow = Math.min(count, 3); // Máximo 3 pontos
           const isToday =
             day === today.getDate() &&
             month === today.getMonth() &&
@@ -60,23 +61,24 @@ export function MonthCalendar() {
             <div
               key={idx}
               className={`
-                aspect-square flex items-center justify-center rounded-lg
-                text-xs sm:text-sm font-medium transition
+                aspect-square flex flex-col items-center justify-center rounded-lg
+                text-xs sm:text-sm font-medium transition relative
                 ${!day ? "bg-transparent" : ""}
                 ${
-                  isToday
-                    ? "bg-white text-black"
-                    : count > 0
-                    ? "bg-neutral-700 text-white"
-                    : "bg-neutral-800 text-neutral-500"
+                  isToday? "bg-white text-black": "bg-neutral-700 text-neutral-300 hover:bg-neutral-800"
                 }
               `}
             >
-              {day}
+              <span className={count > 0 ? "mb-0.5" : ""}>{day}</span>
               {count > 0 && (
-                <span className="absolute bottom-1 text-xs opacity-70">
-                  •
-                </span>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: dotsToShow }).map((_, i) => (
+                    <span 
+                      key={i} 
+                      className="w-1 h-1 rounded-full bg-red-500"
+                    />
+                  ))}
+                </div>
               )}
             </div>
           );
