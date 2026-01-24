@@ -52,19 +52,23 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
           <h3 className="text-sm sm:text-base font-medium text-white">
             {activity.title}
           </h3>
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            {activity.difficulty && (
-              <span className={`text-xs px-2 py-1 rounded-lg ${difficultyColors[activity.difficulty]}`}>
-                {activity.difficulty.charAt(0).toUpperCase() + activity.difficulty.slice(1)}
+          {isCompleted ? (
+            <div className="text-sm text-neutral-400">Concluída</div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {activity.difficulty && (
+                <span className={`text-xs px-2 py-1 rounded-lg ${difficultyColors[activity.difficulty]}`}>
+                  {activity.difficulty.charAt(0).toUpperCase() + activity.difficulty.slice(1)}
               </span>
             )}
               <span className={`text-xs font-medium ${priorityColors[activity.priority]}`}>
                 Prioridade: {activity.priority}
               </span>
-          </div>
+            </div>
+          )}
         </div>
       </div>
-
+          {isCompleted ? null : (
       <div className="flex items-center justify-between">
         <div className="text-xs sm:text-sm text-neutral-400">
           {activity.estimated_time}min
@@ -102,7 +106,9 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
             {isLoading ? "Iniciando..." : "Iniciar"}
           </button>
         )}
+
       </div>
+      )}
     </div>
   );
 }
