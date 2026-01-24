@@ -3,17 +3,31 @@
 import { Activity } from "@/types/activity";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
+import { useSwipeDelete } from "@/hooks/useSwipeDelete";
 
 interface Props {
   activity: Activity;
   onStart?: () => void | Promise<void>;
-  isHighlighted?: boolean;
+  onDelete?: (id: string) => void;
 }
 
-export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
+export function ActivityCard({ activity, onStart, onDelete }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const isCompleted = activity.status === "completed";
   const isInterrupted = activity.status === "interrupted";
+
+  const {
+    offsets,
+    deletingIds,
+    handleStart,
+    handleMove,
+    handleEnd,
+  } = useSwipeDelete({
+    onDelete: onDelete || (() => {}),
+  });
+
+  const offset = offsets[activity.id] || 0;
+  const isDeleting = deletingIds.has(activity.id);
   
   const difficultyColors: Record<string, string> = {
     baixa: "bg-green-900/30 text-green-300",
@@ -38,16 +52,34 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
   }
 
   return (
-    <div
-      className={`
-        rounded-2xl border p-4 sm:p-5 transition
-        ${
-          isHighlighted
-            ? "border-white bg-neutral-900/80 ring-2 ring-white/20"
-            : "border-neutral-700 bg-neutral-900/40 hover:bg-neutral-900/60"
-        }
-      `}
-    >
+    <div className="relative">
+      {/* Background de deletar - só aparece quando offset < 0 */}
+      {offset < 0 && (
+        <div className="absolute inset-0 flex items-center justify-end pr-8 bg-red-500 rounded-2xl">
+          <span className="text-white font-semibold text-sm">Deletar</span>
+        </div>
+      )}
+
+      {/* Card principal */}
+      <div
+        className={'relative rounded-2xl  p-4 sm:p-5  bg-neutral-900 ring-2 ring-white/20  hover:bg-neutral-900'}
+        style={{
+          transform: `translateX(${isDeleting ? '-100vw' : offset}px)`,
+          transition: isDeleting 
+            ? "transform 0.3s cubic-bezier(0.4, 0, 1, 1), opacity 0.3s ease-out" 
+            : offset === 0 
+            ? "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)" 
+            : "none",
+          opacity: isDeleting ? 0 : 1,
+        }}
+        onTouchStart={(e) => handleStart(activity.id, e)}
+        onTouchMove={(e) => handleMove(activity.id, e)}
+        onTouchEnd={() => handleEnd(activity.id)}
+        onMouseDown={(e) => handleStart(activity.id, e)}
+        onMouseMove={(e) => handleMove(activity.id, e)}
+        onMouseUp={() => handleEnd(activity.id)}
+        onMouseLeave={() => handleEnd(activity.id)}
+      >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1">
           <h3 className="text-sm sm:text-base font-medium text-white">
@@ -97,15 +129,9 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
           <button
             onClick={handleClick}
             disabled={isLoading}
-            className={`
-              flex items-center gap-2 px-3 py-2 rounded-lg
-              font-medium text-sm transition
-              ${
-                isHighlighted
-                  ? "bg-white text-black hover:bg-neutral-200 disabled:bg-neutral-300"
-                  : "bg-neutral-800 text-white hover:bg-neutral-700 disabled:bg-neutral-900"
-              }
-              ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg 
+              font-medium text-sm transition bg-neutral-800
+               text-white hover:bg-neutral-700
             `}
           >
             <PlayIcon className={`w-4 h-4 ${isLoading ? "animate-pulse" : ""}`} />
@@ -115,6 +141,7 @@ export function ActivityCard({ activity, onStart, isHighlighted }: Props) {
 
       </div>
       )}
+      </div>
     </div>
   );
 }

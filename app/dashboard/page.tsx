@@ -13,7 +13,7 @@ import { activityToAction, getRankedActions } from "@/lib/ranking";
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { activities, loading: activitiesLoading, updateActivity } =
+  const { activities, loading: activitiesLoading, updateActivity, deleteActivity } =
     useActivities();
   const { startSession, sessions } = useSessions();
 
@@ -138,6 +138,7 @@ export default function DashboardPage() {
                   nextAction.activity.title
                 )
               }
+              onDelete={deleteActivity}
             />
           </section>
         )}
@@ -158,6 +159,7 @@ export default function DashboardPage() {
                     action.activity.title
                   )
                 }
+                onDelete={deleteActivity}
               />
             ))}
           </section>

@@ -10,7 +10,7 @@ import { ActivityCard } from "@/components/ui/ActivityCard";
 
 export default function ActivitiesPage() {
   const router = useRouter();
-  const { activities, addActivity, updateActivity } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity } = useActivities();
   const { startSession, sessions } = useSessions();
 
   const [mounted, setMounted] = useState(false);
@@ -173,6 +173,7 @@ export default function ActivitiesPage() {
               key={activity.id}
               activity={activity}
               onStart={() => handleStartActivity(activity.id, activity.title)}
+              onDelete={deleteActivity}
             />
           ))}
         </section>
@@ -193,6 +194,7 @@ export default function ActivitiesPage() {
             <ActivityCard
               key={activity.id}
               activity={activity}
+              onDelete={deleteActivity}
             />
           ))}
         </section>
