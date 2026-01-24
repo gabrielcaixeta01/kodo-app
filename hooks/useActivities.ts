@@ -49,6 +49,34 @@ export function useActivities() {
     }
 
     fetchActivities();
+
+    // 🔄 Subscribe to real-time updates
+    const channel = supabase.channel("activities_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "activities",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setActivities((prev) => [payload.new as Activity, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setActivities((prev) =>
+              prev.map((a) => (a.id === (payload.new as Activity).id ? (payload.new as Activity) : a))
+            );
+          } else if (payload.eventType === "DELETE") {
+            setActivities((prev) => prev.filter((a) => a.id !== (payload.old as Activity).id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   async function addActivity(

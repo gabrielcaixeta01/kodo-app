@@ -32,7 +32,7 @@ export function CircularProgress({
       <svg
         width={size}
         height={size}
-        className="rotate-[-90deg]"
+        className="-rotate-90"
         style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.3))" }}
       >
         {/* Track */}
@@ -60,7 +60,7 @@ export function CircularProgress({
         />
       </svg>
 
-      <div className="absolute inset-0 flex items-center justify-center rotate-[0deg]">
+      <div className="absolute inset-0 flex items-center justify-center rotate-0">
         <div className="text-center">
           <div className="text-xl sm:text-2xl font-medium text-white">{Math.round(clamped)}%</div>
           {label && (

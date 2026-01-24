@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useActivities } from "@/hooks/useActivities";
+import { useSessions } from "@/hooks/useSessions";
 import { Activity, Difficulty, Priority } from "@/types/activity";
 import { AddActivityForm } from "@/components/ui/AddActivityForm";
 import { ActivityCard } from "@/components/ui/ActivityCard";
 
 export default function ActivitiesPage() {
+  const router = useRouter();
   const { activities, addActivity, updateActivity } = useActivities();
+  const { startSession } = useSessions();
 
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
@@ -89,6 +93,20 @@ export default function ActivitiesPage() {
     }
   }
 
+  async function handleStartActivity(activityId: string, activityTitle: string) {
+    try {
+      await updateActivity(activityId, { status: "in_progress" });
+      await startSession(activityId, activityTitle);
+      router.push("/focus");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao iniciar atividade"
+      );
+    }
+  }
+
   const activeActivities = activities.filter(
     (a) => a.status !== "completed"
   );
@@ -149,7 +167,7 @@ export default function ActivitiesPage() {
             <ActivityCard
               key={activity.id}
               activity={activity}
-              onStart={() => updateActivity(activity.id, { status: "in_progress" })}
+              onStart={() => handleStartActivity(activity.id, activity.title)}
             />
           ))}
         </section>
