@@ -96,7 +96,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-8 pb-40 sm:pb-32">
       <div className="max-w-3xl mx-auto space-y-8">
         <header>
           <h1 className="text-2xl font-medium">Dashboard</h1>
@@ -125,13 +125,12 @@ export default function DashboardPage() {
 
         {!activitiesLoading && nextAction && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-neutral-300">
+            <h2 className="text-xs uppercase tracking-widest text-neutral-500">
               Próxima ação recomendada
             </h2>
 
             <ActivityCard
               activity={nextAction.activity}
-              isHighlighted
               onStart={() =>
                 handleStart(
                   nextAction.activity.id,
@@ -145,7 +144,7 @@ export default function DashboardPage() {
 
         {!activitiesLoading && otherActions.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-neutral-300">
+            <h2 className="text-xs uppercase tracking-widest text-neutral-500">
               Outras atividades
             </h2>
 

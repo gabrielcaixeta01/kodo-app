@@ -121,7 +121,7 @@ export default function ActivitiesPage() {
   );
 
   return (
-    <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
+    <main className="min-h-screen bg-black text-white p-4 sm:p-8 pb-40 sm:pb-32">
       <div className="max-w-3xl mx-auto space-y-8">
         <header>
           <h1 className="text-xl sm:text-2xl font-medium">Atividades</h1>

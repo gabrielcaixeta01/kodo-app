@@ -2,36 +2,42 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useActivities } from "@/hooks/useActivities";
-import { Activity } from "@/types/activity"; // Importa o tipo correto
+import { useSessions } from "@/hooks/useSessions";
 
 type DayData = {
   label: string;
   count: number;
 };
 
-function getLast7DaysActivity(activities: Activity[]): DayData[] {
+type Session = {
+  started_at: string;
+  duration: number;
+};
+
+function getLast7DaysDuration(sessions: Session[]): DayData[] {
   const result: DayData[] = [];
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
-    date.setHours(0, 0, 0, 0);
 
-    const nextDate = new Date(date);
-    nextDate.setDate(date.getDate() + 1);
+    // Formata a data para YYYY-MM-DD para comparação simples
+    const dateString = date.toISOString().split('T')[0];
 
-    const count = activities.filter(a => {
-      if (!a.created_at) return false; // Garante que existe created_at
-      const d = new Date(a.created_at);
-      return d >= date && d < nextDate;
-    }).length;
+    const totalMinutes = sessions.filter(s => {
+      if (!s.started_at) return false;
+      // Pega apenas a data de início em YYYY-MM-DD
+      const sessionDateString = new Date(s.started_at).toISOString().split('T')[0];
+      return sessionDateString === dateString;
+    }).reduce((acc, s) => acc + (s.duration || 0), 0);
 
     result.push({
       label: date.toLocaleDateString("pt-BR", {
         weekday: "short",
       }),
-      count,
+      count: totalMinutes as number,
     });
   }
 
@@ -39,12 +45,13 @@ function getLast7DaysActivity(activities: Activity[]): DayData[] {
 }
 
 export function WeeklyActivityChart() {
-  const { activities } = useActivities();
+  useActivities();
+  const { sessions } = useSessions();
   const [mounted, setMounted] = useState(false);
 
   const data = useMemo(
-    () => getLast7DaysActivity(activities),
-    [activities]
+    () => getLast7DaysDuration(sessions),
+    [sessions]
   );
 
   const maxCount = Math.max(...data.map(d => d.count), 1);
@@ -88,7 +95,7 @@ export function WeeklyActivityChart() {
       </div>
 
       <p className="mt-3 text-xs text-neutral-500">
-        Atividades criadas por dia
+        Minutos de foco por dia
       </p>
     </section>
   );
