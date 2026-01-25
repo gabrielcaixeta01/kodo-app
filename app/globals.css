@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* NÃO bloquear eventos globalmente */
+* {
+  box-sizing: border-box;
+}
+
 button,
 a,
 label {
@@ -16,6 +19,13 @@ form {
   -webkit-user-select: text;
   user-select: text;
 }
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 
 html {
   background-color: black;
@@ -44,6 +54,13 @@ body {
     font-size: 14px;
   }
 }
+
+@supports (padding: max(0px)) {
+  nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
 
 input:focus {
   outline: none;
