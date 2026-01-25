@@ -19,19 +19,36 @@ function getLast7DaysDuration(sessions: Session[]): DayData[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  console.log('📊 [WeeklyChart] Total sessions:', sessions.length);
+
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
 
     // Formata a data para YYYY-MM-DD para comparação simples
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const totalMinutes = sessions.filter(s => {
       if (!s.started_at) return false;
-      // Pega apenas a data de início em YYYY-MM-DD
-      const sessionDateString = new Date(s.started_at).toISOString().split('T')[0];
-      return sessionDateString === dateString;
+      
+      // Cria data local para evitar problemas de timezone
+      const sessionDate = new Date(s.started_at);
+      const sessionDateString = `${sessionDate.getFullYear()}-${String(sessionDate.getMonth() + 1).padStart(2, '0')}-${String(sessionDate.getDate()).padStart(2, '0')}`;
+      
+      const match = sessionDateString === dateString;
+      
+      if (match) {
+        console.log(`✅ Session matched for ${dateString}:`, {
+          started_at: s.started_at,
+          duration: s.duration,
+          sessionDateString
+        });
+      }
+      
+      return match;
     }).reduce((acc, s) => acc + (s.duration || 0), 0);
+
+    console.log(`📅 ${dateString}: ${totalMinutes} minutes`);
 
     result.push({
       label: date.toLocaleDateString("pt-BR", {
@@ -81,10 +98,17 @@ export function WeeklyActivityChart() {
             >
               <div className="relative h-full flex items-end w-full">
                 <div
-                  className="rounded-full bg-white/80 transition-all duration-300 mx-auto"
-                  style={{ height: `${height || 5}%`, width: '60%' }}
+                  className="rounded-lg bg-linear-to-b from-emerald-400/90 to-emerald-600 transition-all duration-300 mx-auto"
+                  style={{ height: `${height}%`, minHeight: d.count > 0 ? 8 : 2, width: '60%' }}
                 />
               </div>
+
+              {/* Minutes label */}
+              {d.count > 0 ? (
+                <span className="text-[10px] sm:text-[11px] text-neutral-300 leading-none">{d.count}m</span>
+              ) : (
+                <span className="text-[10px] sm:text-[11px] text-transparent leading-none">0m</span>
+              )}
 
               <span className="text-[10px] sm:text-[11px] text-neutral-400 truncate">
                 {d.label}
@@ -94,7 +118,7 @@ export function WeeklyActivityChart() {
         })}
       </div>
 
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-center italic text-neutral-500">
         Minutos de foco por dia
       </p>
     </section>

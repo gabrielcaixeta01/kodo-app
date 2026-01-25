@@ -90,14 +90,20 @@ export function AddActivityForm({
         </div>
 
         {/* Prazo */}
-        <input
-          type="date"
-          value={dueDate}
-          onChange={e =>
-            setDueDate(e.target.value)
-          }
-          className="w-full rounded-xl bg-black border border-neutral-700 px-4 py-3 text-sm sm:text-base focus:outline-none focus:border-neutral-500 transition"
-        />
+        <div>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={e =>
+              setDueDate(e.target.value)
+            }
+            className="w-full rounded-xl bg-black border border-neutral-700 px-4 py-3 text-sm sm:text-base focus:outline-none focus:border-neutral-500 transition appearance-none"
+            style={{
+              WebkitAppearance: "none",
+              MozAppearance: "none",
+            }}
+          />
+        </div>
 
         <button
           type="submit"
