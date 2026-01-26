@@ -93,7 +93,7 @@ export default function SettingsPage() {
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300">
               <Cog6ToothIcon className="h-4 w-4 text-neutral-300" />
-              <span>Settings</span>
+              <span>Configurações</span>
             </div>
 
             <h1 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight">
@@ -182,11 +182,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </section>
-
-        {/* Footer hint */}
-        <div className="text-xs text-neutral-600">
-          KODO • Configurações
-        </div>
       </div>
     </main>
   );
