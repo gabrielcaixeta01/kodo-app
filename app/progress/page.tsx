@@ -32,7 +32,6 @@ export default function ProgressPage() {
     }
   }, [user, authLoading, mounted, router]);
 
-  // Filtrar apenas últimos 7 dias
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   
@@ -62,9 +61,8 @@ export default function ProgressPage() {
   /* ------------------ métricas ------------------ */
   const totalSessions = mounted ? completedSessions.length : 0;
   const totalInterrupted = mounted ? interruptedSessions.length : 0;
-
-  const totalMinutes = mounted
-    ? finishedSessions.reduce((sum, s) => sum + (s.duration ?? 0), 0)
+  const totalCompletedMinutes = mounted
+    ? completedSessions.reduce((sum, s) => sum + (s.duration ?? 0), 0)
     : 0;
 
   const daysWithSessions = mounted
@@ -88,7 +86,6 @@ export default function ProgressPage() {
         )
       : 0;
 
-  /* ------------------ padrões ------------------ */
   const morningSessions = mounted
     ? finishedSessions.filter((s) => {
         const h = new Date(s.started_at).getHours();
@@ -154,7 +151,6 @@ export default function ProgressPage() {
     patterns.push("Ainda não há dados suficientes para identificar padrões.");
   }
 
-  /* ------------------ alinhamento ------------------ */
   const alignment: {
     area: string;
     status: AlignmentStatus;
@@ -178,21 +174,20 @@ export default function ProgressPage() {
     {
       area: "Volume de prática",
       status:
-        totalMinutes >= 300
+        totalCompletedMinutes >= 300
           ? "bom"
-          : totalMinutes >= 120
+          : totalCompletedMinutes >= 120
           ? "aviso"
           : "fora-de-trilha",
       note:
-        totalMinutes >= 300
+        totalCompletedMinutes >= 300
           ? "Boa carga semanal de foco."
-          : totalMinutes >= 120
+          : totalCompletedMinutes >= 120
           ? "Carga moderada de foco."
           : "Pouco tempo de foco registrado.",
     },
   ];
 
-  /* ------------------ UI ------------------ */
   return (
     <main className="min-h-screen bg-black text-white p-4 sm:p-6 pb-24 sm:pb-20">
       <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-10">
@@ -215,7 +210,7 @@ export default function ProgressPage() {
             <Stat label="Sessões" value={totalSessions} />
             <Stat
               label="Tempo de foco"
-              value={`${(totalMinutes / 60).toFixed(1)}h`}
+              value={`${(totalCompletedMinutes / 60).toFixed(1)}h`}
             />
             <Stat
               label="Consistência"
@@ -226,7 +221,7 @@ export default function ProgressPage() {
               value={`${
                 totalSessions
                   ? Math.round(
-                      totalMinutes / totalSessions
+                      totalCompletedMinutes / totalSessions
                     )
                   : 0
               } min`}

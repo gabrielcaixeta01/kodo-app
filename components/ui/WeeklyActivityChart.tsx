@@ -11,7 +11,8 @@ type DayData = {
 
 type Session = {
   started_at: string;
-  duration: number;
+  duration: number | null;
+  status: "in_progress" | "completed" | "interrupted";
 };
 
 function getLast7DaysDuration(sessions: Session[]): DayData[] {
@@ -29,6 +30,8 @@ function getLast7DaysDuration(sessions: Session[]): DayData[] {
     const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const totalMinutes = Math.floor(sessions.filter(s => {
+      // conta apenas sessões concluídas
+      if (s.status !== "completed") return false;
       if (!s.started_at) return false;
       
       // Cria data local para evitar problemas de timezone
@@ -46,7 +49,7 @@ function getLast7DaysDuration(sessions: Session[]): DayData[] {
       }
       
       return match;
-    }).reduce((acc, s) => acc + (s.duration || 0), 0));
+    }).reduce((acc, s) => acc + (s.duration ?? 0), 0));
 
     console.log(`📅 ${dateString}: ${totalMinutes} minutes`);
 
