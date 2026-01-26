@@ -1,11 +1,7 @@
 "use client";
 
 import { Activity } from "@/types/activity";
-import {
-  PlayIcon,
-  CheckCircleIcon,
-  CalendarDaysIcon,
-} from "@heroicons/react/24/solid";
+import { PlayIcon, CheckCircleIcon, CalendarDaysIcon } from "@heroicons/react/24/solid";
 import { useMemo, useState } from "react";
 import { useSwipeDelete } from "@/hooks/useSwipeDelete";
 
@@ -36,11 +32,9 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
     onDelete: onDelete || (() => {}),
   });
 
-  const dueDateLabel = useMemo(
-    () => formatDatePtBR(activity.due_date),
-    [activity.due_date]
-  );
+  const dueDateLabel = useMemo(() => formatDatePtBR(activity.due_date), [activity.due_date]);
 
+  // Chips continuam translúcidos porque ficam DENTRO do card opaco (não vazam o vermelho)
   const difficultyChip: Record<Activity["difficulty"], string> = {
     baixa: "border-emerald-500/25 bg-emerald-500/10 text-emerald-200",
     "média": "border-amber-500/25 bg-amber-500/10 text-amber-200",
@@ -64,13 +58,13 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden rounded-md">
       {/* Background delete */}
-      <div className="absolute inset-0 flex items-center justify-end pr-8 bg-red-500 rounded-2xl">
+      <div className="absolute inset-0 flex items-center justify-end pr-8 bg-red-500 border-2 border-black rounded-3xl">
         <span className="text-white font-semibold text-sm">Deletar</span>
       </div>
 
-      {/* Card */}
+      {/* Card (100% opaco p/ não vazar o vermelho) */}
       <div
         ref={setRef(activity.id)}
         onPointerDown={(e) => handleStart(activity.id, e)}
@@ -78,12 +72,22 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
         onPointerUp={() => handleEnd(activity.id)}
         onPointerCancel={() => handleEnd(activity.id)}
         className={[
-          "relative rounded-xl p-4 sm:p-5 touch-pan-y select-none",
-          "bg-neutral-900 border border-white/5",
-          "shadow-[0_1px_0_rgba(255,255,255,0.04)]",
-          
+          "group relative select-none touch-pan-y",
+          "rounded-3xl p-4 sm:p-5",
+          // ✅ opaco
+          "bg-neutral-950",
+          // ✅ borda + ring premium
+          "border border-white/10 ring-1 ring-black/40",
+          // ✅ sombras sutis (depth sem transparência)
+          "shadow-[0_10px_30px_rgba(0,0,0,0.35)]",
+          "transition-transform duration-200 will-change-transform",
         ].join(" ")}
       >
+        {/* top shine opaco (não deixa ver o vermelho) */}
+        <div className="pointer-events-none rounded-3xl absolute inset-x-0 top-0 h-20 bg-linear-to-b from-white/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* subtle inner divider */}
+        <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" />
+
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             {/* Title row */}
@@ -94,8 +98,8 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
 
               <h3
                 className={[
-                  "text-sm sm:text-base font-medium text-white truncate",
-                  isCompleted ? "line-through decoration-white/70" : "",
+                  "text-sm sm:text-base font-semibold text-white truncate",
+                  isCompleted ? "line-through decoration-white/20" : "",
                 ].join(" ")}
                 title={activity.title}
               >
@@ -103,7 +107,7 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
               </h3>
             </div>
 
-            {/* Subline: due date (always if exists) + time for completed */}
+            {/* Subline */}
             {(dueDateLabel || isCompleted) && (
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-400">
                 {dueDateLabel && (
@@ -131,7 +135,7 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
                     difficultyChip[activity.difficulty],
                   ].join(" ")}
                 >
-                  Dificuldade: {activity.difficulty}
+                  Dif: {activity.difficulty}
                 </span>
 
                 <span
@@ -140,16 +144,20 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
                     priorityChip[activity.priority],
                   ].join(" ")}
                 >
-                  Prioridade: {activity.priority}
+                  Prior: {activity.priority}
                 </span>
               </div>
             )}
           </div>
 
-          {/* Right side: subtle status for completed */}
-          {isCompleted && (
-            <span className="text-[11px] text-neutral-400 bg-white/5 border border-white/10 px-2 py-1 rounded-full">
+          {/* Right pill */}
+          {isCompleted ? (
+            <span className="text-[11px] text-neutral-300 bg-white/5 border border-white/10 px-2 py-1 rounded-full">
               Concluída
+            </span>
+          ) : (
+            <span className="text-[11px] text-neutral-400 bg-white/5 border border-white/10 px-2 py-1 rounded-full">
+              {activity.estimated_time}min
             </span>
           )}
         </div>
@@ -157,8 +165,8 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
         {/* Bottom row only for NOT completed */}
         {!isCompleted && (
           <div className="mt-4 flex items-center justify-between">
-            <div className="text-xs sm:text-sm text-neutral-400">
-              {activity.estimated_time}min
+            <div className="text-xs sm:text-sm text-neutral-500">
+              {dueDateLabel ? `Até ${dueDateLabel}` : "Sem data"}
             </div>
 
             {onStart && (
@@ -166,7 +174,7 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
                 onClick={handleClick}
                 disabled={isLoading}
                 className={[
-                  "flex items-center gap-2 px-3 py-2 rounded-xl",
+                  "flex items-center gap-2 px-3 py-2 rounded-2xl",
                   "bg-white/5 border border-white/10 text-white",
                   "hover:bg-white/8 hover:border-white/15 transition",
                   "disabled:opacity-60 disabled:cursor-not-allowed",
@@ -179,8 +187,8 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
           </div>
         )}
 
-        {/* Small divider to keep completed cards “designed” without clutter */}
-        {isCompleted && <div className="mt-3 h-px w-full bg-white/5" />}
+        {/* Divider for completed */}
+        {isCompleted && <div className="mt-4 h-px w-full bg-white/5" />}
       </div>
     </div>
   );
