@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { NavigationProgress } from "@/components/layout/NavigationProgress";
+import { PageFade } from "@/components/layout/PageFade";
+import { SplashScreen } from "@/components/layout/SplashScreen";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
@@ -60,8 +63,12 @@ export default function RootLayout({
       <body>
         <ErrorBoundary>
           <AuthProvider>
+            <SplashScreen />
+            <NavigationProgress />
             <ServiceWorkerRegister />
-            {children}
+            <PageFade>
+              {children}
+            </PageFade>
             <ConditionalFooterNav />
           </AuthProvider>
         </ErrorBoundary>

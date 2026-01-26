@@ -63,23 +63,6 @@ export default function FocusPage() {
     );
   }
 
-  // Sem sessão em andamento
-  if (!currentSession) {
-    return (
-      <main className="min-h-screen bg-black text-white p-4 sm:p-6 flex items-center justify-center">
-        <div className="max-w-md w-full rounded-2xl border border-neutral-800 p-6 space-y-4 text-center">
-          <p className="text-sm text-neutral-300">Nenhuma sessão em andamento.</p>
-          <button
-            className="w-full rounded-xl bg-white text-black py-2 font-medium"
-            onClick={() => router.replace("/dashboard")}
-          >
-            Voltar ao dashboard
-          </button>
-        </div>
-      </main>
-    );
-  }
-
   const minutesElapsed = elapsedMs / 60000; // mantém precisão de segundos
   const progressValue = Math.min(100, (elapsedMs / (expectedMinutes * 60000)) * 100);
 
