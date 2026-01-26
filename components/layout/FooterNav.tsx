@@ -20,50 +20,64 @@ export function FooterNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-800 bg-black/90 backdrop-blur">
+    <nav className="fixed bottom-0 left-0 right-0 z-30">
+      {/* subtle fade to content */}
+      <div className="pointer-events-none absolute inset-x-0 -top-6 h-6 bg-linear-to-t from-black/80 to-transparent" />
+
       <div
         className="
           mx-auto max-w-3xl
-          flex justify-around items-center
-          h-16 sm:h-20
-          px-2
+          px-3 pb-3
         "
       >
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
+        <div
+          className="
+            flex items-center justify-between
+            h-16 sm:h-18
+            rounded-3xl
+            border border-white/10
+            bg-white/5 backdrop-blur-xl
+            shadow-[0_-1px_0_rgba(255,255,255,0.04)]
+          "
+        >
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                flex flex-col items-center justify-center
-                flex-1
-                h-full
-                text-xs sm:text-sm
-                transition
-                ${
-                  isActive
-                    ? "text-white font-medium"
-                    : "text-neutral-400 hover:text-neutral-200"
-                }
-              `}
-            >
-              <span
-                className={`
-                  px-3 py-2 rounded-lg
-                  ${
-                    isActive
-                      ? "bg-neutral-900/60"
-                      : "hover:bg-neutral-900/40"
-                  }
-                `}
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="
+                  group relative flex-1 h-full
+                  flex items-center justify-center
+                "
               >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+                <div
+                  className={[
+                    "flex flex-col items-center gap-1",
+                    "text-[11px] sm:text-xs transition",
+                    isActive
+                      ? "text-white font-medium"
+                      : "text-neutral-400 group-hover:text-neutral-200",
+                  ].join(" ")}
+                >
+                  {/* Active indicator */}
+                  <span
+                    className={[
+                      "px-3 py-1.5 rounded-full transition ease-in-out duration-500",
+                      isActive
+                        ? "bg-white/10 border border-white/15"
+                        : "border border-transparent group-hover:bg-white/5",
+                    ].join(" ")}
+                  >
+                    {item.label}
+                  </span>
+
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

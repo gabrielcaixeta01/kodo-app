@@ -3,7 +3,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ConditionalFooterNav } from "@/components/layout/ConditionalFooterNav";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NavigationProgress } from "@/components/layout/NavigationProgress";
-import { PageFade } from "@/components/layout/PageFade";
 import { SplashScreen } from "@/components/layout/SplashScreen";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -66,9 +65,7 @@ export default function RootLayout({
             <SplashScreen />
             <NavigationProgress />
             <ServiceWorkerRegister />
-            <PageFade>
               {children}
-            </PageFade>
             <ConditionalFooterNav />
           </AuthProvider>
         </ErrorBoundary>
