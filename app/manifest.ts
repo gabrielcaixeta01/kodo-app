@@ -32,14 +32,6 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "maskable",
       },
     ],
-    screenshots: [
-      {
-        src: "/icons/screenshot-540x720.png",
-        sizes: "540x720",
-        type: "image/png",
-        form_factor: "narrow",
-      },
-    ],
     shortcuts: [
       {
         name: "Dashboard",
