@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 type CircularProgressProps = {
   value: number; // 0-100
   size?: number; // px
@@ -9,6 +7,7 @@ type CircularProgressProps = {
   trackColor?: string;
   progressColor?: string;
   label?: string;
+  text?: string; // custom center text, overrides percentage
 };
 
 export function CircularProgress({
@@ -18,6 +17,7 @@ export function CircularProgress({
   trackColor = "#262626", // neutral-800
   progressColor = "#ffffff",
   label,
+  text,
 }: CircularProgressProps) {
   const clamped = Math.max(0, Math.min(100, value));
   const radius = (size - strokeWidth) / 2;
@@ -62,7 +62,7 @@ export function CircularProgress({
 
       <div className="absolute inset-0 flex items-center justify-center rotate-0">
         <div className="text-center">
-          <div className="text-xl sm:text-2xl font-medium text-white">{Math.round(clamped)}%</div>
+          <div className="text-xl sm:text-2xl font-medium text-white">{text ?? `${Math.round(clamped)}%`}</div>
           {label && (
             <div className="text-xs text-neutral-400 mt-1">{label}</div>
           )}

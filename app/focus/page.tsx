@@ -16,6 +16,7 @@ export default function FocusPage() {
   const [mounted, setMounted] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [targetMinutes, setTargetMinutes] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Espera montagem para evitar flicker
@@ -48,7 +49,15 @@ export default function FocusPage() {
   }, [currentSession]);
 
   const activity = activities.find((a) => a.id === currentSession?.activity_id);
-  const expectedMinutes = activity?.estimated_time ?? 25;
+
+  // Capture target minutes once per session/activity to avoid fallback to 25 during teardown
+  useEffect(() => {
+    if (activity?.estimated_time) {
+      setTargetMinutes(activity.estimated_time);
+    }
+  }, [activity?.id, activity?.estimated_time]);
+
+  const expectedMinutes = (targetMinutes ?? activity?.estimated_time) ?? 25;
 
   // Estados de carregamento
   if (!mounted || authLoading || activitiesLoading || sessionsLoading) {
@@ -63,11 +72,10 @@ export default function FocusPage() {
     );
   }
 
-  const minutesElapsed = elapsedMs / 60000; // mantém precisão de segundos
+  const minutesElapsed = elapsedMs / 60000;
   const progressValue = Math.min(100, (elapsedMs / (expectedMinutes * 60000)) * 100);
 
   const handleComplete = async () => {
-    // ✅ Evita múltiplos cliques
     if (isProcessing) return;
 
     setIsProcessing(true);
@@ -88,7 +96,6 @@ export default function FocusPage() {
   };
 
   const handleInterrupt = async () => {
-    // ✅ Evita múltiplos cliques
     if (isProcessing) return;
 
     setIsProcessing(true);
@@ -121,6 +128,7 @@ export default function FocusPage() {
         <div className="flex items-center justify-center py-2">
           <CircularProgress
             value={progressValue}
+            text={`${Math.floor(minutesElapsed)} min`}
             label={`meta: ${expectedMinutes} min`}
           />
         </div>
