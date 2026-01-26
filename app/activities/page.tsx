@@ -30,17 +30,6 @@ export default function ActivitiesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Migração defensiva
-  useEffect(() => {
-    if (!mounted) return;
-
-    activities.forEach(activity => {
-      if (!activity.status) {
-        updateActivity(activity.id, { status: "pending" });
-      }
-    });
-  }, [mounted, activities, updateActivity]);
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;

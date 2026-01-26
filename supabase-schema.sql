@@ -22,7 +22,7 @@ CREATE TABLE sessions (
   activity_id UUID NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('in_progress', 'completed', 'interrupted')),
-  duration INTEGER, -- em minutos, preenchido quando a sessão termina
+  duration REAL, -- em minutos (com precisão de segundos), preenchido quando a sessão termina
   started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   ended_at TIMESTAMPTZ
 );

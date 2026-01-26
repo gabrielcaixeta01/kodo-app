@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabaseClient } from "@/lib/supabaseClient";
 import { Activity } from "@/types/activity";
@@ -79,14 +79,14 @@ export function useActivities() {
     };
   }, [user]);
 
-  async function addActivity(
+  const addActivity = useCallback(async (
     title: string,
     estimatedTime: number,
     energyRequired: Activity["energy_required"],
     difficulty: Activity["difficulty"] = "média",
     priority: Activity["priority"] = "média",
     dueDate?: string
-  ) {
+  ) => {
     const supabase = getSupabaseClient();
     if (!supabase || !user) {
       console.error("Supabase ou user não disponível");
@@ -137,12 +137,12 @@ export function useActivities() {
       console.error("Catch error:", errorMsg);
       setError(errorMsg);
     }
-  }
+  }, [user]);
 
-  async function updateActivity(
+  const updateActivity = useCallback(async (
     id: string,
     updates: Partial<Activity>
-  ) {
+  ) => {
     const supabase = getSupabaseClient();
     if (!supabase || !user) return;
 
@@ -167,9 +167,9 @@ export function useActivities() {
           : "Erro ao atualizar atividade"
       );
     }
-  }
+  }, [user]);
 
-  async function deleteActivity(id: string) {
+  const deleteActivity = useCallback(async (id: string) => {
     const supabase = getSupabaseClient();
     if (!supabase || !user) return;
 
@@ -190,7 +190,7 @@ export function useActivities() {
           : "Erro ao deletar atividade"
       );
     }
-  }
+  }, [user]);
 
   return {
     activities,

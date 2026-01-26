@@ -21,10 +21,9 @@ export default function ProgressPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
-    }, 100); // pequeno atraso para evitar flicker
+    }, 0);
 
     return () => clearTimeout(timer);
-    //
   }, []);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function ProgressPage() {
     }
   }, [user, authLoading, mounted, router]);
 
-  // ✅ Filtrar apenas últimos 7 dias
+  // Filtrar apenas últimos 7 dias
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   

@@ -80,7 +80,7 @@ export default function FocusPage() {
     );
   }
 
-  const minutesElapsed = Math.floor(elapsedMs / 60000);
+  const minutesElapsed = elapsedMs / 60000; // mantém precisão de segundos
   const progressValue = Math.min(100, (elapsedMs / (expectedMinutes * 60000)) * 100);
 
   const handleComplete = async () => {
@@ -145,7 +145,7 @@ export default function FocusPage() {
         <div className="space-y-2">
           <p className="text-xs sm:text-sm text-neutral-400">Tempo</p>
           <p className="text-base sm:text-lg font-medium">
-            {minutesElapsed} min
+            {Math.floor(minutesElapsed)} min
           </p>
           <p className="text-xs text-neutral-500">
             {Math.floor((elapsedMs % 60000) / 1000)}s

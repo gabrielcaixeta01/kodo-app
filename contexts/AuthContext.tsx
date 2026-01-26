@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { createContext, useContext, useLayoutEffect, useState } from "react";
@@ -20,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useLayoutEffect(() => {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      setLoading(false);
+      Promise.resolve().then(() => setLoading(false));
       return;
     }
 

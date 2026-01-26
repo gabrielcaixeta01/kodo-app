@@ -28,7 +28,7 @@ function getLast7DaysDuration(sessions: Session[]): DayData[] {
     // Formata a data para YYYY-MM-DD para comparação simples
     const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    const totalMinutes = sessions.filter(s => {
+    const totalMinutes = Math.floor(sessions.filter(s => {
       if (!s.started_at) return false;
       
       // Cria data local para evitar problemas de timezone
@@ -46,7 +46,7 @@ function getLast7DaysDuration(sessions: Session[]): DayData[] {
       }
       
       return match;
-    }).reduce((acc, s) => acc + (s.duration || 0), 0);
+    }).reduce((acc, s) => acc + (s.duration || 0), 0));
 
     console.log(`📅 ${dateString}: ${totalMinutes} minutes`);
 
@@ -98,17 +98,15 @@ export function WeeklyActivityChart() {
             >
               <div className="relative h-full flex items-end w-full">
                 <div
-                  className="rounded-lg bg-linear-to-b from-emerald-400/90 to-emerald-600 transition-all duration-300 mx-auto"
+                  className="rounded-md bg-linear-to-b from-emerald-400/90 to-emerald-600 transition-all duration-300 mx-auto"
                   style={{ height: `${height}%`, minHeight: d.count > 0 ? 8 : 2, width: '60%' }}
                 />
               </div>
 
               {/* Minutes label */}
-              {d.count > 0 ? (
-                <span className="text-[10px] sm:text-[11px] text-neutral-300 leading-none">{d.count}m</span>
-              ) : (
-                <span className="text-[10px] sm:text-[11px] text-transparent leading-none">0m</span>
-              )}
+              <span className="text-[10px] sm:text-[11px] text-neutral-300 leading-none">
+                {d.count > 0 ? `${d.count} min` : "0 min"}
+              </span>
 
               <span className="text-[10px] sm:text-[11px] text-neutral-400 truncate">
                 {d.label}
