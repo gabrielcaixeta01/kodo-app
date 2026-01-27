@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabaseClient";
 
@@ -12,7 +12,7 @@ function getHashParams() {
   return new URLSearchParams(hash);
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -162,5 +162,24 @@ export default function ResetPasswordPage() {
         </button>
       </form>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-white/5 p-6 animate-pulse">
+            <div className="h-5 w-44 bg-white/10 rounded" />
+            <div className="mt-3 h-4 w-64 bg-white/10 rounded" />
+            <div className="mt-6 h-11 bg-white/10 rounded-2xl" />
+            <div className="mt-3 h-11 bg-white/10 rounded-2xl" />
+          </div>
+        </main>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
