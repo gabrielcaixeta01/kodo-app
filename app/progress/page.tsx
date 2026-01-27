@@ -183,7 +183,7 @@ export default function ProgressPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.06)_1px,transparent_0)] bg-size-[22px_22px] opacity-[0.20]" />
       </div>
 
-      <div className="relative mx-auto max-w-3xl p-4 sm:p-6 pb-24 sm:pb-20 space-y-6 sm:space-y-10">
+      <div className="relative mx-auto max-w-3xl p-4 sm:p-6 pb-40 sm:pb-32 space-y-6 sm:space-y-10">
         {/* Header */}
         <header className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300">
@@ -301,20 +301,17 @@ function AlignmentCard({
     item.status === "bom"
       ? {
           label: "Bom",
-          dot: "bg-emerald-400/80",
           pill: "border-emerald-500/25 bg-emerald-500/10 text-emerald-200",
           Icon: CheckCircleIcon,
         }
       : item.status === "aviso"
       ? {
           label: "Aviso",
-          dot: "bg-amber-400/80",
           pill: "border-amber-500/25 bg-amber-500/10 text-amber-200",
           Icon: ExclamationTriangleIcon,
         }
       : {
           label: "Fora",
-          dot: "bg-red-400/80",
           pill: "border-red-500/25 bg-red-500/10 text-red-200",
           Icon: XCircleIcon,
         };
@@ -334,7 +331,6 @@ function AlignmentCard({
         </div>
 
         <div className="shrink-0 flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${statusUI.dot}`} />
           <span className={`text-[11px] px-2.5 py-1 rounded-full border ${statusUI.pill}`}>
             <span className="inline-flex items-center gap-1.5">
               <Icon className="h-4 w-4" />

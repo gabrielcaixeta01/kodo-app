@@ -126,12 +126,8 @@ export default function DashboardPage() {
 
             <div className="hidden sm:flex items-center gap-2">
               <span className="text-xs text-neutral-400 border border-white/10 bg-white/5 px-3 py-1 rounded-full">
-                Pendentes:{" "}
+                Atividades pendentes:{" "}
                 <span className="text-neutral-200">{pendingActivities.length}</span>
-              </span>
-              <span className="text-xs text-neutral-400 border border-white/10 bg-white/5 px-3 py-1 rounded-full">
-                Ranking:{" "}
-                <span className="text-neutral-200">{rankedActions.length}</span>
               </span>
             </div>
           </div>

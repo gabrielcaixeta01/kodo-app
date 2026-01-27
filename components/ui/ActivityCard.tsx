@@ -135,7 +135,7 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
                     difficultyChip[activity.difficulty],
                   ].join(" ")}
                 >
-                  Dif: {activity.difficulty}
+                  Dificuldade: {activity.difficulty}
                 </span>
 
                 <span
@@ -144,7 +144,7 @@ export function ActivityCard({ activity, onStart, onDelete }: Props) {
                     priorityChip[activity.priority],
                   ].join(" ")}
                 >
-                  Prior: {activity.priority}
+                  Prioridade: {activity.priority}
                 </span>
               </div>
             )}
