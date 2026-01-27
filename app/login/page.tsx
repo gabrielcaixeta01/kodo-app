@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabaseClient } from "@/lib/supabaseClient";
 import {
@@ -27,10 +27,12 @@ export default function LoginPage() {
 
   const { user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname === "/reset-password") return;
     if (user) router.replace("/dashboard");
-  }, [user, router]);
+  }, [user, router, pathname]);
 
   const redirectTo = useMemo(() => {
     if (typeof window === "undefined") return undefined;
