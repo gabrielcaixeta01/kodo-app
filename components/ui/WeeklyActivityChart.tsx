@@ -90,28 +90,32 @@ export function WeeklyActivityChart() {
         Últimos 7 dias
       </h2>
 
-      <div className="mt-4 flex items-end gap-2 sm:gap-4 h-24 sm:h-32">
+      <div className="mt-4 flex items-end gap-1.5 sm:gap-4 h-32 sm:h-40">
         {data.map((d, i) => {
-          const height = (d.count / maxCount) * 100;
+          const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
 
           return (
             <div
               key={`day-${i}`}
-              className="flex flex-col items-center gap-1.5 sm:gap-2 flex-1 min-w-0"
+              className="flex flex-col items-center gap-1 sm:gap-2 flex-1 min-w-0"
             >
               <div className="relative h-full flex items-end w-full">
                 <div
                   className="rounded-md bg-linear-to-b from-emerald-400/90 to-emerald-600 transition-all duration-300 mx-auto"
-                  style={{ height: `${height}%`, minHeight: d.count > 0 ? 8 : 2, width: '60%' }}
+                  style={{ 
+                    height: `${height}%`, 
+                    minHeight: d.count > 0 ? '6px' : '2px', 
+                    width: '60%' 
+                  }}
                 />
               </div>
 
               {/* Minutes label */}
-              <span className="text-[10px] sm:text-[11px] text-neutral-300 leading-none">
-                {d.count > 0 ? `${d.count} min` : "0 min"}
+              <span className="text-[9px] sm:text-xs text-neutral-300 leading-none whitespace-nowrap">
+                {d.count}m
               </span>
 
-              <span className="text-[10px] sm:text-[11px] text-neutral-400 truncate">
+              <span className="text-[9px] sm:text-xs text-neutral-400 truncate w-full text-center">
                 {d.label}
               </span>
             </div>

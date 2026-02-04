@@ -38,7 +38,14 @@ export default function ActivitiesPage() {
   );
 
   const completedActivities = useMemo(
-    () => activities.filter((a) => a.status === "completed"),
+    () => activities
+      .filter((a) => a.status === "completed")
+      .sort((a, b) => {
+        const dateA = new Date(a.updated_at || a.created_at).getTime();
+        const dateB = new Date(b.updated_at || b.created_at).getTime();
+        return dateB - dateA; // mais recentes primeiro
+      })
+      .slice(0, 3), // apenas as 3 últimas
     [activities]
   );
 
@@ -234,7 +241,7 @@ export default function ActivitiesPage() {
               Concluídas
             </h2>
             <span className="text-[11px] text-neutral-400 border border-white/10 bg-white/5 px-2 py-1 rounded-full">
-              {completedActivities.length} itens
+              {completedActivities.length} últimas
             </span>
           </div>
 
